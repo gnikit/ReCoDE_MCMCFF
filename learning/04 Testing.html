@@ -239,7 +239,7 @@ TOTAL                             <span class="m">36</span>     <span class="m">
 
 
 <span class="n">mean</span><span class="p">,</span> <span class="n">std_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">)</span>
-<span class="n">std_error</span> <span class="o">=</span> <span class="n">std_dev</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+<span class="n">std_err</span> <span class="o">=</span> <span class="n">std_dev</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
 
 <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_1samp</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">pvalue</span>
 <span class="nb">print</span><span class="p">(</span>
@@ -265,19 +265,19 @@ TOTAL                             <span class="m">36</span>     <span class="m">
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Over 10 samples we got an average color of -0.00253 +/- 0.100466
-That&#39;s -0.00253 +/- 3971%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Over 10 samples we got an average color of -0.00018 +/- 0.100228
+That&#39;s -0.00018 +/- 55682%
 
-The standard error of the mean is about 91%
+The standard error of the mean is about 1245%
 
-The p value when comparing that with 0 is 0.26
+The p value when comparing that with 0 is 0.94
 p &gt; 0.1 : True
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f8ac6ad04f0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f9987350d60&gt;
 </pre></div>
 </div>
-<img alt="../_images/aa6e1e0f29b9f7d6e588a6ed70b8ee1a37f4b875a5dc3a65d3fc1d5df407d8d4.png" src="../_images/aa6e1e0f29b9f7d6e588a6ed70b8ee1a37f4b875a5dc3a65d3fc1d5df407d8d4.png" />
+<img alt="../_images/5bd1c10511e35b3d1050efa1b9b10796bd51898f05d649d2704e5b1858ccc469.png" src="../_images/5bd1c10511e35b3d1050efa1b9b10796bd51898f05d649d2704e5b1858ccc469.png" />
 </div>
 </div>
 <p>There are three things happening here:</p>
@@ -346,6 +346,39 @@ black....................................................................Passed
 </div>
 </div>
 <p>Finally, be aware that if you try to commit code with incorrect syntax then black will just error and prevent it, this is probably a good thing but there may be the occasional time where that’s a problem.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> watermark
+<span class="o">%</span><span class="k">watermark</span> -n -u -v -iv -w -g -r -b -a &quot;Thomas Hodson&quot; -gu &quot;T_Hodson&quot;
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Author: Thomas Hodson
+
+Github username: T_Hodson
+
+Last updated: Mon Jul 18 2022
+
+Python implementation: CPython
+Python version       : 3.9.12
+IPython version      : 8.4.0
+
+Git hash: 03657e08835fdf23a808f59baa6c6a9ad684ee55
+
+Git repo: https://github.com/ImperialCollegeLondon/ReCoDE_MCMCFF.git
+
+Git branch: main
+
+matplotlib: 3.5.1
+scipy     : 1.7.3
+numpy     : 1.21.5
+
+Watermark: 2.3.1
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -427,7 +460,7 @@ black....................................................................Passed
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Thomas Hodson.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
     </div>
   </body>
 </html>

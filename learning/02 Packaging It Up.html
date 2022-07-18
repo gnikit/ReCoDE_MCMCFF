@@ -77,8 +77,8 @@
 │       └── <span class="c1">#The Jupyer notebooks that form the main body of this project</span>
 │
 ├── pyproject.toml <span class="c1"># Machine readable information about the MCFF package</span>
-├── readthedocs.yaml <span class="c1"># Tells readthedocs.com how to build the documentation</span>
-├── requirements.txt <span class="c1"># What packages MCFF requires</span>
+├── readthedocs.yml <span class="c1"># Tells readthedocs.com how to build the documentation</span>
+├── environment.yml <span class="c1"># A specification for building a conda environment including all the dependencies</span>
 ├── setup.cfg <span class="c1"># Machine readable information about the MCFF package</span>
 ├── src
 │   └── MCFF <span class="c1"># The actual code!</span>
@@ -90,7 +90,7 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> - An intro to the project</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> - The software license that governs this project, there are a few standard ones people use.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">environment.yaml</span></code> (or both) this list what python packages the project needs in a standard format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">environment.yaml</span></code> (or both) this list what python packages the project needs in a standard format</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> This is the new standard way to describe how a work should be cited, v useful for academic software.</p></li>
 </ul>
 <p>Then below that you will usually have directories breaking the project up into main categories, here I have <code class="docutils literal notranslate"><span class="pre">code/</span></code> and <code class="docutils literal notranslate"><span class="pre">learning/</span></code> but it would be more typical to have what is in <code class="docutils literal notranslate"><span class="pre">code</span></code> at the top level.</p>
@@ -104,7 +104,7 @@
 <span class="kn">from</span> <span class="nn">MCFF</span> <span class="kn">import</span> <span class="n">mcmc</span> <span class="c1">#once we&#39;ve written this that is!</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> are the current way to describe the metadat about a python package like how it should be installed and who the author is etc, but typically you just copy the standard layouts and build from there. The empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file flags that this folder is a python module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> are the current way to describe the metadata about a python package like how it should be installed and who the author is etc, but typically you just copy the standard layouts and build from there. The empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file flags that this folder is a python module.</p>
 <p>pyproject.toml:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
 <span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setuptools&gt;=4.2&quot;</span><span class="p">]</span>
@@ -121,38 +121,81 @@
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">ipykernel</span></code> is there because it lets you run the envronment in a jupyter notebook easily.</p>
 <p>setup.cfg</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">metadata</span><span class="p">]</span>
-<span class="n">name</span> <span class="o">=</span> <span class="n">MCFF</span>
-<span class="n">version</span> <span class="o">=</span> <span class="mf">0.0.1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span> <span class="o">=</span> <span class="mf">0.0.1</span>
 <span class="n">author</span> <span class="o">=</span> <span class="n">Tom</span> <span class="n">Hodson</span>
 <span class="n">author_email</span> <span class="o">=</span> <span class="n">tch14</span><span class="nd">@ic</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">uk</span>
 <span class="n">description</span> <span class="o">=</span> <span class="n">A</span> <span class="n">small</span> <span class="n">example</span> <span class="n">package</span>
 <span class="n">long_description</span> <span class="o">=</span> <span class="n">file</span><span class="p">:</span> <span class="n">README</span><span class="o">.</span><span class="n">md</span>
 <span class="n">long_description_content_type</span> <span class="o">=</span> <span class="n">text</span><span class="o">/</span><span class="n">markdown</span>
-<span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">url</span> <span class="o">=</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">TomHodson</span><span class="o">/</span><span class="n">MCMC_for_fun_and_profit</span>
 <span class="n">classifiers</span> <span class="o">=</span>
     <span class="n">Programming</span> <span class="n">Language</span> <span class="p">::</span> <span class="n">Python</span> <span class="p">::</span> <span class="mi">3</span>
-    <span class="n">License</span> <span class="p">::</span> <span class="n">OSI</span> <span class="n">Approved</span> <span class="p">::</span> <span class="n">MIT</span> <span class="n">License</span>
+    <span class="n">License</span> <span class="p">::</span> <span class="n">OSI</span> <span class="n">Approved</span> <span class="p">::</span> <span class="n">The</span> <span class="mi">3</span><span class="o">-</span><span class="n">Clause</span> <span class="n">BSD</span> <span class="n">License</span>
     <span class="n">Operating</span> <span class="n">System</span> <span class="p">::</span> <span class="n">OS</span> <span class="n">Independent</span>
 
 <span class="p">[</span><span class="n">options</span><span class="p">]</span>
-<span class="n">package_dir</span> <span class="o">=</span> 
+<span class="n">package_dir</span> <span class="o">=</span>
     <span class="o">=</span> <span class="n">src</span>
 <span class="n">packages</span> <span class="o">=</span> <span class="n">find</span><span class="p">:</span>
 <span class="n">python_requires</span> <span class="o">=</span> <span class="o">&gt;=</span><span class="mf">3.6</span>
+<span class="n">install_requires</span> <span class="o">=</span>
+  <span class="n">numpy</span> <span class="o">==</span> <span class="mf">1.21</span>      
+  <span class="n">scipy</span> <span class="o">==</span> <span class="mf">1.7</span>
+  <span class="n">matplotlib</span> <span class="o">==</span> <span class="mf">3.5</span>
+  <span class="n">numba</span> <span class="o">==</span> <span class="mf">0.55</span>
+  <span class="n">ipykernel</span> <span class="o">==</span> <span class="mf">6.9</span>   <span class="c1"># Allows this conda environment to show up automatically in Jupyter Lab</span>
+  <span class="n">watermark</span> <span class="o">==</span> <span class="mf">2.3</span>    <span class="c1"># Generates a summary of package version for use inside Jupyter Notebooks</span>
 
 <span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">find</span><span class="p">]</span>
 <span class="n">where</span> <span class="o">=</span> <span class="n">src</span>
+<span class="n">dev</span> <span class="o">=</span> 
+  <span class="n">pytest</span> <span class="o">==</span> <span class="mf">7.1</span>      <span class="c1"># Testing</span>
+  <span class="n">pytest</span><span class="o">-</span><span class="n">cov</span> <span class="o">==</span> <span class="mf">3.0</span>  <span class="c1"># For Coverage testing</span>
+  <span class="n">hypothesis</span> <span class="o">==</span> <span class="mf">6.29</span>  <span class="c1"># Property based testing</span>
+  <span class="n">pre</span><span class="o">-</span><span class="n">commit</span> <span class="o">==</span> <span class="mf">2.20</span>
+  
+<span class="n">docs</span> <span class="o">=</span> 
+  <span class="n">sphinx</span> <span class="o">==</span> <span class="mf">5.0</span>       <span class="c1"># For building the documentation</span>
+  <span class="n">myst</span><span class="o">-</span><span class="n">nb</span> <span class="o">==</span> <span class="mf">0.16</span> 
 </pre></div>
 </div>
 <p>Phew, that was a lot. Python packaging has been evolving a lot over the years and the consequence is there is a lot of out of date advice and there are many other ways to do this. You’re best bet to figure out what the current best practice is is to consult offical sources like python.org</p>
 <p>Once all that is setup, cd to the <code class="docutils literal notranslate"><span class="pre">code/</span></code> folder and install the module using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --editable .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --editable <span class="s2">&quot;.[dev,docs]&quot;</span>
 </pre></div>
 </div>
-<p>The dot means we should install MCFF from the current directory and <code class="docutils literal notranslate"><span class="pre">--editable</span></code> means to do it as an editable package so that we can edit the files in MCFF and not have to reinstall. This is really useful for development.</p>
+<p>The dot means we should install MCFF from the current directory and <code class="docutils literal notranslate"><span class="pre">--editable</span></code> means to do it as an editable package so that we can edit the files in MCFF and not have to reinstall. This is really useful for development. <code class="docutils literal notranslate"><span class="pre">[dev,docs]</span></code> means we also want to install the packages that are needed to do development of this repository and to build the documentation, boths those things will become relevant later!</p>
 <p>In the next notebook, we will finally write the Markov Chain Monte Carlo function! And if you found yourself frustrated while dealing with python packaging, you can at least take solace in the fact that you’re not the only one:</p>
-<img style="max-width:700px;margin:auto;" src = "https://imgs.xkcd.com/comics/python_environment.png" alt = "An xkcd comic with a diagram of p values, saying that small ones are highly significant and giving humorous excuses for why larger ones are still intersting"></section>
+<img style="max-width:700px;margin:auto;" src = "https://imgs.xkcd.com/comics/python_environment.png" alt = "An xkcd comic with a diagram of p values, saying that small ones are highly significant and giving humorous excuses for why larger ones are still intersting"><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> watermark
+<span class="o">%</span><span class="k">watermark</span> -n -u -v -iv -w -g -r -b -a &quot;Thomas Hodson&quot; -gu &quot;T_Hodson&quot;
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Author: Thomas Hodson
+
+Github username: T_Hodson
+
+Last updated: Mon Jul 18 2022
+
+Python implementation: CPython
+Python version       : 3.9.12
+IPython version      : 8.4.0
+
+Git hash: 03657e08835fdf23a808f59baa6c6a9ad684ee55
+
+Git repo: https://github.com/ImperialCollegeLondon/ReCoDE_MCMCFF.git
+
+Git branch: main
+
+Watermark: 2.3.1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 
@@ -225,7 +268,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Thomas Hodson.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
     </div>
   </body>
 </html>

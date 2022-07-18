@@ -61,8 +61,8 @@
 <p>Hello and welcome to the documentation for MCMCFF! These notebooks will guide you through the process of writing a medium sized scientific software project, discussing the decision and tradeoffs made along the way.</p>
 <section id="setting-up-your-environment">
 <h2>Setting up your environment<a class="headerlink" href="#setting-up-your-environment" title="Permalink to this heading">¶</a></h2>
-<p>It’s strongly encouraged that you follow along this notebook in an enviroment where you can run the cells yourself and change them. You can either clone this git repository and run the cells in a python environment on your local machine, or if you for some reason can’t do that (because you’re an a phone or tablet for instance) you can instead open this notebook in <span class="xref myst">binder</span></p>
-<p>I would also suggest you setup a python environment just for this. You can use your preferred method to do this, but I will recomend <code class="docutils literal notranslate"><span class="pre">conda</span></code> because it’s both what I currently use and what is recommeded by Imperial: LINK</p>
+<p>It’s strongly encouraged that you follow along this notebook in an enviroment where you can run the cells yourself and change them. You can either clone this git repository and run the cells in a python environment on your local machine, or if you for some reason can’t do that (because you’re an a phone or tablet for instance) you can instead open this notebook in <a class="reference external" href="https://mybinder.org/v2/gh/TomHodson/ReCoDE_MCMCFF/HEAD">binder</a></p>
+<p>I would also suggest you setup a python environment just for this. You can use your preferred method to do this, but I will recomend <code class="docutils literal notranslate"><span class="pre">conda</span></code> because it’s both what I currently use and what is recommeded by Imperial.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#make a new conda environment from the specification in environment.yml</span>
 conda env create --file environment.yml
 
@@ -123,7 +123,7 @@ conda activate ./env <span class="c1">#you have to run this in the enclosing dir
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9d686a12cd12e27583aef22230956c9a7eef82fd07234928c35563c2ed436aa6.png" src="../_images/9d686a12cd12e27583aef22230956c9a7eef82fd07234928c35563c2ed436aa6.png" />
+<img alt="../_images/39dec5fca902f2d7ba736be715f358e6e26b3200f3d80ddcfb2a1c23ef470148.png" src="../_images/39dec5fca902f2d7ba736be715f358e6e26b3200f3d80ddcfb2a1c23ef470148.png" />
 </div>
 </div>
 <p>In my head, the Ising model is basically all about peer pressure. You’re a tiny creature and you live in a little world where you can only be one of two things, up/down, left/right, in/out doesn’t matter.</p>
@@ -154,7 +154,7 @@ $$E = \sum_{(i,j)} s_i s_j$$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/01ee29106447fe61e567e0f20bddd1ede95a7cb64d4369aec7c3edcc903f8ad9.png" src="../_images/01ee29106447fe61e567e0f20bddd1ede95a7cb64d4369aec7c3edcc903f8ad9.png" />
+<img alt="../_images/8cd7a2f6b7510150dabe76c52d8de8034236936e4dce43a0369a8b66050e0765.png" src="../_images/8cd7a2f6b7510150dabe76c52d8de8034236936e4dce43a0369a8b66050e0765.png" />
 </div>
 </div>
 <p>If you stare at the first two long enough you’ll realise we can figure out the energy of all_up and all_down without writing any code at all:</p>
@@ -219,7 +219,7 @@ $$E = \frac{1}{L^2} (4(L-2)^2 + 12(L-2) + 8)$$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f6d0d162c235cdfce488da807e84a912264d265d1689daed7cbe106608a24502.png" src="../_images/f6d0d162c235cdfce488da807e84a912264d265d1689daed7cbe106608a24502.png" />
+<img alt="../_images/4a4edc97ed3f58b0c81a2c18d6d28b8b9c7243f9b6dfdcedd61dfdbe8f5d596c.png" src="../_images/4a4edc97ed3f58b0c81a2c18d6d28b8b9c7243f9b6dfdcedd61dfdbe8f5d596c.png" />
 </div>
 </div>
 </section>
@@ -266,7 +266,7 @@ $$E = \frac{1}{L^2} (4(L-2)^2 + 12(L-2) + 8)$$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c4d8d15ff4122dd5ce2473d56bcb89ea9f54506c2d24538d03970156d0c383d0.png" src="../_images/c4d8d15ff4122dd5ce2473d56bcb89ea9f54506c2d24538d03970156d0c383d0.png" />
+<img alt="../_images/d1da1e5c9d3c9a15ed2a37368a7f197e5dfefbb793cbc6a197f27307e02a6855.png" src="../_images/d1da1e5c9d3c9a15ed2a37368a7f197e5dfefbb793cbc6a197f27307e02a6855.png" />
 </div>
 </div>
 <p>It’s a bit tricky to know what to do with the random value, let’s try running it 100 times and see what we get:</p>
@@ -284,7 +284,7 @@ $$E = \frac{1}{L^2} (4(L-2)^2 + 12(L-2) + 8)$$</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean = -0.24, standard error = 29.819071481184658
 </pre></div>
 </div>
-<img alt="../_images/3444e8ff7e8cc1b13e0d54e49947292c037548b7c668c67947af17b16841c5e0.png" src="../_images/3444e8ff7e8cc1b13e0d54e49947292c037548b7c668c67947af17b16841c5e0.png" />
+<img alt="../_images/c0cb4b718c41b270649fd2b7fcd1e000122ad3a3e4b1bed71438d99201211f46.png" src="../_images/c0cb4b718c41b270649fd2b7fcd1e000122ad3a3e4b1bed71438d99201211f46.png" />
 </div>
 </div>
 <p>If you run this a few times you’ll see the mean is usually within a few standard errors of 0, which gives us some confidence. In the testing section we will discuss how we might go about doing automated tests of random variables like this.</p>
@@ -343,10 +343,10 @@ $$E = \frac{1}{L^2} (4(L-2)^2 + 12(L-2) + 8)$$</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Naive baseline implementation
-78.1 ms ± 997 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+80.9 ms ± 2.94 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 Your version
-75.6 ms ± 2.13 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+80.2 ms ± 4.99 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 Your speedup: 1x !
 </pre></div>
 </div>
@@ -405,15 +405,15 @@ Your speedup: 1x !
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Naive baseline implementation
-77.1 ms ± 1.87 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+81.2 ms ± 3.2 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 Numba version
-205 µs ± 16.6 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
-Numba Speedup: 417x !
+212 µs ± 20.5 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+Numba Speedup: 420x !
 
 Numpy version
-167 µs ± 30.7 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
-Numpy Speedup: 554x !
+153 µs ± 37.5 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+Numpy Speedup: 576x !
 </pre></div>
 </div>
 </div>
@@ -459,7 +459,7 @@ Numpy Speedup: 554x !
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Improved Naive version
-32.3 ms ± 1.54 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+34.6 ms ± 147 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 Speedup: 2x !
 </pre></div>
 </div>
@@ -474,6 +474,39 @@ Speedup: 2x !
 <li><p>I won’t have to redefine the energy function we just wrote in the next notebook</p></li>
 <li><p>It will help with testing and documenting our code later</p></li>
 </ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> watermark
+<span class="o">%</span><span class="k">watermark</span> -n -u -v -iv -w -g -r -b -a &quot;Thomas Hodson&quot; -gu &quot;T_Hodson&quot;
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Author: Thomas Hodson
+
+Github username: T_Hodson
+
+Last updated: Mon Jul 18 2022
+
+Python implementation: CPython
+Python version       : 3.9.12
+IPython version      : 8.4.0
+
+Git hash: 03657e08835fdf23a808f59baa6c6a9ad684ee55
+
+Git repo: https://github.com/ImperialCollegeLondon/ReCoDE_MCMCFF.git
+
+Git branch: main
+
+matplotlib: 3.5.1
+numpy     : 1.21.5
+json      : 2.0.9
+
+Watermark: 2.3.1
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -559,7 +592,7 @@ Speedup: 2x !
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Thomas Hodson.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
     </div>
   </body>
 </html>

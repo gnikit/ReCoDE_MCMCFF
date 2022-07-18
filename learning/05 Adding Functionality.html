@@ -150,7 +150,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;generator object my_range at 0x7fe3b2359660&gt;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;generator object my_range at 0x7fcaff25da50&gt;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 </pre></div>
 </div>
 </div>
@@ -195,15 +195,48 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>18.4 ms ± 364 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
-9.51 ms ± 309 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
-0x slowdown!
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>18.6 ms ± 645 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+13.3 ms ± 1.74 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+1x slowdown!
 </pre></div>
 </div>
 </div>
 </div>
 <p>Fun fact: if you replace <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">current_state.copy()</span></code> with <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">current_state</span></code> your python kernel will crash when you run the code. I believe this is a bug in Numba that related to how pointers to numpy arrays work but let’s not worry too much about it.</p>
 <p>We take a factor of two slowdown but that doesn’t seem so much to pay for the fact we can now sample the state at every single step rather than just the last.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> watermark
+<span class="o">%</span><span class="k">watermark</span> -n -u -v -iv -w -g -r -b -a &quot;Thomas Hodson&quot; -gu &quot;T_Hodson&quot;
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Author: Thomas Hodson
+
+Github username: T_Hodson
+
+Last updated: Mon Jul 18 2022
+
+Python implementation: CPython
+Python version       : 3.9.12
+IPython version      : 8.4.0
+
+Git hash: 03657e08835fdf23a808f59baa6c6a9ad684ee55
+
+Git repo: https://github.com/ImperialCollegeLondon/ReCoDE_MCMCFF.git
+
+Git branch: main
+
+json      : 2.0.9
+numpy     : 1.21.5
+matplotlib: 3.5.1
+
+Watermark: 2.3.1
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -283,7 +316,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Thomas Hodson.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
     </div>
   </body>
 </html>
