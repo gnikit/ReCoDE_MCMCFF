@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>API Docs &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="learning/01%20Introduction.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="learning/01%20Introduction.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API Docs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="api-docs">
+<h1>API Docs<a class="headerlink" href="#api-docs" title="Permalink to this heading">¶</a></h1>
+<section id="module-MCFF.mcmc">
+<span id="mcmc-markov-chain-monte-carlo-routines"></span><h2>MCMC : Markov Chain Monte Carlo Routines<a class="headerlink" href="#module-MCFF.mcmc" title="Permalink to this heading">¶</a></h2>
+<p>mcmc provides routines for performin Markov Chain Monte Carlo</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.mcmc.mcmc_generator">
+<span class="sig-prename descclassname"><span class="pre">MCFF.mcmc.</span></span><span class="sig-name descname"><span class="pre">mcmc_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stepsize=1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_difference=CPUDispatcher(&lt;function</span> <span class="pre">energy_difference&gt;)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.mcmc.mcmc_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields the state after each MCMC step. Performs <cite>steps</cite> monte carlo steps each of size <cite>stepsize</cite> starting from <cite>initial_state</cite> at temperature <cite>T</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial_state</strong> (<em>array_like</em>) – Numpy array of shape (N,N) with values +1,-1</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – The number of steps to take.</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – The temperature at which to perform the simulation.</p></li>
+<li><p><strong>stepsize</strong> (<em>int</em><em>, </em><em>default = 1000</em>) – How many times to try to flip a pixel between for each step.</p></li>
+<li><p><strong>energy_difference</strong> (<em>function</em><em>(</em><em>state</em><em>, </em><em>site</em><em>)</em><em>, </em><em>default = ising_model.energy_difference</em>) – A function that gives the energy change from flippings <cite>site = (i, j)`of `state</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>np.array</em> – The final state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.mcmc.mcmc_original">
+<span class="sig-prename descclassname"><span class="pre">MCFF.mcmc.</span></span><span class="sig-name descname"><span class="pre">mcmc_original</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng=Generator(PCG64)</span> <span class="pre">at</span> <span class="pre">0x7FEB06282580</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.mcmc.mcmc_original" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the state after performing <cite>steps</cite> monte carlo steps starting from <cite>initial_state</cite> at temperature <cite>T</cite>.</p>
+<p>This is the original version of the algorithm, written in notebook 03.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial_state</strong> (<em>array_like</em>) – Numpy array of shape (N,N) with values +1,-1</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – The number of steps to take.</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – The temperature at which to perform the simulation.</p></li>
+<li><p><strong>rng</strong> (<em>numpy.random._generator.Generator</em><em>, </em><em>default = np.random.default_rng</em><em>(</em><em>)</em>) – Optionally pass in the rng to be used, useful to get reproducable answers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The final state.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-MCFF.ising_model">
+<span id="ising-model-ising-model-routines"></span><h2>Ising_Model : Ising Model Routines<a class="headerlink" href="#module-MCFF.ising_model" title="Permalink to this heading">¶</a></h2>
+<p>ising_model provides functions specific to the 2D ising model such as computing its energy and generating special states.</p>
+<p>States are represented by NxM numpy arrays with values +/-1. These functions are intended to be used with a markov chain monte carlo routine to sample from the thermal ensemble of the 2d Ising model.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.all_down_state">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">all_down_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.all_down_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The NxN all down state of the Ising model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.all_up_state">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">all_up_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.all_up_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The NxN all up state of the Ising model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.energy">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the energy of a state of the Ising Model with open boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>array_like</em>) – A NxM array containing only the values +1 and -1</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The interaction energy per site.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.energy_difference">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">energy_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.energy_difference" title="Permalink to this definition">¶</a></dt>
+<dd><p>The change in energy if we flipped site of state</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.energy_numpy">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">energy_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.energy_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the energy of a state of the Ising Model with open boundary conditions.</p>
+<p>An alternate implementation of <cite>energy</cite> using Numpy array operations, used for comparison and correctness checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>array_like</em><em> (</em><em>)</em>) – A 2D array containing only the values +1 and -1</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The interaction energy per site.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.random_state">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">random_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnetisation=0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng=Generator(PCG64)</span> <span class="pre">at</span> <span class="pre">0x7FEB0403E4A0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.random_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the a random NxN state of the Ising model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – The returned state will have shape (N,N)</p></li>
+<li><p><strong>magnetisation</strong> (<em>int</em><em>, </em><em>default = 0.5</em>) – What proportion of the values will be +1</p></li>
+<li><p><strong>rng</strong> (<em>numpy.random._generator.Generator</em><em>, </em><em>default = np.random.default_rng</em><em>(</em><em>)</em>) – Optionally pass in the rng to be used, useful to get reproducable answers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A random NxN state.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MCFF.ising_model.show_state">
+<span class="sig-prename descclassname"><span class="pre">MCFF.ising_model.</span></span><span class="sig-name descname"><span class="pre">show_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MCFF.ising_model.show_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot an Ising state to axis or make a new figure to plot to</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">API Docs</a><ul>
+<li><a class="reference internal" href="#module-MCFF.mcmc">MCMC : Markov Chain Monte Carlo Routines</a></li>
+<li><a class="reference internal" href="#module-MCFF.ising_model">Ising_Model : Ising Model Routines</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="quickstart.html"
+                          title="previous chapter">Quickstart</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="learning/01%20Introduction.html"
+                          title="next chapter">Introduction</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api_docs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="learning/01%20Introduction.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API Docs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

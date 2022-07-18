@@ -1,0 +1,167 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "dcddb3be-940b-4416-aec5-7159354c7cc0",
+   "metadata": {},
+   "source": [
+    "<h1 align=\"center\">Markov Chain Monte Carlo for fun and profit</h1>\n",
+    "<h1 align=\"center\"> 🎲 ⛓️ 👉 🧪 </h1>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5e745b48-9cde-49d1-b91b-b04282f6d30d",
+   "metadata": {},
+   "source": [
+    "# Packaging It Up\n",
+    "\n",
+    "Before we proceed with writing any more code I want to put what we already have in python file and make it into an installable module. This will be useful both for importing code into these notebooks and for testing later."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b656f309-1c70-4bc1-842e-bdf2d43d1397",
+   "metadata": {},
+   "source": [
+    "## Directory Structure\n",
+    "More info:\n",
+    "- [General Python Packaging advice](https://packaging.python.org/en/latest/tutorials/packaging-projects/)\n",
+    "- [Packaging for pytest](https://docs.pytest.org/en/6.2.x/goodpractices.html)\n",
+    "\n",
+    "\n",
+    "Before we can do any testing, it is best practice to structure and then package your code up as a python project up. You don't have to do it like this but but it carrys with it the benefit that many only tutorial _expect_ you to do it like this and generally you want to reduce friction for yourself later. \n",
+    "\n",
+    "Like all things progamming, there are many opinions about how python projects should be structured, as I write this the structure of this repository is this: (This is the lightly edited output of the `tree` command if you're interested) \n",
+    "```bash\n",
+    ".\n",
+    "├── CITATION.cff # This file describes how to cite the work contained in this repository.\n",
+    "├── LICENSE # Outlines what legal rights you have to use this software.\n",
+    "├── README.md # You are here!\n",
+    "├── docs\n",
+    "│   ├── ... #Files to do with making the documentation\n",
+    "│   └── learning\n",
+    "│       └── #The Jupyer notebooks that form the main body of this project\n",
+    "│\n",
+    "├── pyproject.toml # Machine readable information about the MCFF package\n",
+    "├── readthedocs.yaml # Tells readthedocs.com how to build the documentation\n",
+    "├── requirements.txt # What packages MCFF requires\n",
+    "├── setup.cfg # Machine readable information about the MCFF package\n",
+    "├── src\n",
+    "│   └── MCFF # The actual code!\n",
+    "│\n",
+    "└── tests # automated tests for the code\n",
+    "```\n",
+    "\n",
+    "It's looks pretty intimidating! But let's quickly go through it, at the top level of most projects you'll find on Github and elsewhere you'll find files to do with the project as a whole:\n",
+    "- `README.md` - An intro to the project\n",
+    "- `LICENSE` - The software license that governs this project, there are a few standard ones people use.\n",
+    "- `requirements.txt` or `environment.yaml` (or both) this list what python packages the project needs in a standard format\n",
+    "- `CITATION.cff` This is the new standard way to describe how a work should be cited, v useful for academic software.\n",
+    "\n",
+    "Then below that you will usually have directories breaking the project up into main categories, here I have `code/` and `learning/` but it would be more typical to have what is in `code` at the top level.\n",
+    "\n",
+    "Inside `code/` we have a standard python package directory structure.\n",
+    "\n",
+    "## Packaging\n",
+    "There are a few things going on here, our actual code lives in `MCFF/` which is wrapped up inside a `src` folder, the `src` thing is a convention related to pytests, check [Packaging for pytest](https://docs.pytest.org/en/6.2.x/goodpractices.html) if you want the gory details.\n",
+    "\n",
+    "Inside `MCFF/` we have our files that will become submodules so that in python we will be able to do things like:\n",
+    "\n",
+    "```python\n",
+    "from MCFF.ising_model import all_up_state, all_down_state, random_state\n",
+    "from MCFF import mcmc #once we've written this that is!\n",
+    "```\n",
+    "\n",
+    "`pyproject.toml` and `setup.cfg` are the current way to describe the metadat about a python package like how it should be installed and who the author is etc, but typically you just copy the standard layouts and build from there. The empty `__init__.py` file flags that this folder is a python module.\n",
+    "\n",
+    "pyproject.toml:\n",
+    "```\n",
+    "[build-system]\n",
+    "requires = [\"setuptools>=4.2\"]\n",
+    "build-backend = \"setuptools.build_meta\"\n",
+    "```\n",
+    "\n",
+    "requirements.txt\n",
+    "```\n",
+    "ipykernel\n",
+    "numpy\n",
+    "scipy\n",
+    "matplotlib\n",
+    "numba\n",
+    "```\n",
+    "`ipykernel` is there because it lets you run the envronment in a jupyter notebook easily. \n",
+    "\n",
+    "setup.cfg\n",
+    "```\n",
+    "[metadata]\n",
+    "name = MCFF\n",
+    "version = 0.0.1\n",
+    "author = Tom Hodson\n",
+    "author_email = tch14@ic.ac.uk\n",
+    "description = A small example package\n",
+    "long_description = file: README.md\n",
+    "long_description_content_type = text/markdown\n",
+    "url = None\n",
+    "classifiers =\n",
+    "    Programming Language :: Python :: 3\n",
+    "    License :: OSI Approved :: MIT License\n",
+    "    Operating System :: OS Independent\n",
+    "\n",
+    "[options]\n",
+    "package_dir = \n",
+    "    = src\n",
+    "packages = find:\n",
+    "python_requires = >=3.6\n",
+    "\n",
+    "[options.packages.find]\n",
+    "where = src\n",
+    "```\n",
+    "Phew, that was a lot. Python packaging has been evolving a lot over the years and the consequence is there is a lot of out of date advice and there are many other ways to do this. You're best bet to figure out what the current best practice is is to consult offical sources like python.org"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cef1ba97-db03-45ce-b428-a027133eabc9",
+   "metadata": {},
+   "source": [
+    "Once all that is setup, cd to the `code/` folder and install the module using:\n",
+    "```bash\n",
+    "pip install --editable .\n",
+    "```\n",
+    "The dot means we should install MCFF from the current directory and `--editable` means to do it as an editable package so that we can edit the files in MCFF and not have to reinstall. This is really useful for development. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3db75fb8-8229-41f4-8004-463b832cd4a4",
+   "metadata": {},
+   "source": [
+    "In the next notebook, we will finally write the Markov Chain Monte Carlo function! And if you found yourself frustrated while dealing with python packaging, you can at least take solace in the fact that you're not the only one:\n",
+    "\n",
+    "<img style=\"max-width:700px;margin:auto;\" src = \"https://imgs.xkcd.com/comics/python_environment.png\" alt = \"An xkcd comic with a diagram of p values, saying that small ones are highly significant and giving humorous excuses for why larger ones are still intersting\">"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python [conda env:jupyter3.9] *",
+   "language": "python",
+   "name": "conda-env-jupyter3.9-py"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

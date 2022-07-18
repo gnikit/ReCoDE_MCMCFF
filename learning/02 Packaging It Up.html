@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Packaging It Up &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Writing a Markov Chain Monte Carlo Routine" href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html" />
+    <link rel="prev" title="Introduction" href="01%20Introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html" title="Writing a Markov Chain Monte Carlo Routine"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="01%20Introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Packaging It Up</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1 align="center">Markov Chain Monte Carlo for fun and profit</h1>
+<h1 align="center"> 🎲 ⛓️ 👉 🧪 </h1><section id="packaging-it-up">
+<h1>Packaging It Up<a class="headerlink" href="#packaging-it-up" title="Permalink to this heading">¶</a></h1>
+<p>Before we proceed with writing any more code I want to put what we already have in python file and make it into an installable module. This will be useful both for importing code into these notebooks and for testing later.</p>
+<section id="directory-structure">
+<h2>Directory Structure<a class="headerlink" href="#directory-structure" title="Permalink to this heading">¶</a></h2>
+<p>More info:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">General Python Packaging advice</a></p></li>
+<li><p><a class="reference external" href="https://docs.pytest.org/en/6.2.x/goodpractices.html">Packaging for pytest</a></p></li>
+</ul>
+<p>Before we can do any testing, it is best practice to structure and then package your code up as a python project up. You don’t have to do it like this but but it carrys with it the benefit that many only tutorial <em>expect</em> you to do it like this and generally you want to reduce friction for yourself later.</p>
+<p>Like all things progamming, there are many opinions about how python projects should be structured, as I write this the structure of this repository is this: (This is the lightly edited output of the <code class="docutils literal notranslate"><span class="pre">tree</span></code> command if you’re interested)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.
+├── CITATION.cff <span class="c1"># This file describes how to cite the work contained in this repository.</span>
+├── LICENSE <span class="c1"># Outlines what legal rights you have to use this software.</span>
+├── README.md <span class="c1"># You are here!</span>
+├── docs
+│   ├── ... <span class="c1">#Files to do with making the documentation</span>
+│   └── learning
+│       └── <span class="c1">#The Jupyer notebooks that form the main body of this project</span>
+│
+├── pyproject.toml <span class="c1"># Machine readable information about the MCFF package</span>
+├── readthedocs.yaml <span class="c1"># Tells readthedocs.com how to build the documentation</span>
+├── requirements.txt <span class="c1"># What packages MCFF requires</span>
+├── setup.cfg <span class="c1"># Machine readable information about the MCFF package</span>
+├── src
+│   └── MCFF <span class="c1"># The actual code!</span>
+│
+└── tests <span class="c1"># automated tests for the code</span>
+</pre></div>
+</div>
+<p>It’s looks pretty intimidating! But let’s quickly go through it, at the top level of most projects you’ll find on Github and elsewhere you’ll find files to do with the project as a whole:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> - An intro to the project</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> - The software license that governs this project, there are a few standard ones people use.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">environment.yaml</span></code> (or both) this list what python packages the project needs in a standard format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> This is the new standard way to describe how a work should be cited, v useful for academic software.</p></li>
+</ul>
+<p>Then below that you will usually have directories breaking the project up into main categories, here I have <code class="docutils literal notranslate"><span class="pre">code/</span></code> and <code class="docutils literal notranslate"><span class="pre">learning/</span></code> but it would be more typical to have what is in <code class="docutils literal notranslate"><span class="pre">code</span></code> at the top level.</p>
+<p>Inside <code class="docutils literal notranslate"><span class="pre">code/</span></code> we have a standard python package directory structure.</p>
+</section>
+<section id="packaging">
+<h2>Packaging<a class="headerlink" href="#packaging" title="Permalink to this heading">¶</a></h2>
+<p>There are a few things going on here, our actual code lives in <code class="docutils literal notranslate"><span class="pre">MCFF/</span></code> which is wrapped up inside a <code class="docutils literal notranslate"><span class="pre">src</span></code> folder, the <code class="docutils literal notranslate"><span class="pre">src</span></code> thing is a convention related to pytests, check <a class="reference external" href="https://docs.pytest.org/en/6.2.x/goodpractices.html">Packaging for pytest</a> if you want the gory details.</p>
+<p>Inside <code class="docutils literal notranslate"><span class="pre">MCFF/</span></code> we have our files that will become submodules so that in python we will be able to do things like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MCFF.ising_model</span> <span class="kn">import</span> <span class="n">all_up_state</span><span class="p">,</span> <span class="n">all_down_state</span><span class="p">,</span> <span class="n">random_state</span>
+<span class="kn">from</span> <span class="nn">MCFF</span> <span class="kn">import</span> <span class="n">mcmc</span> <span class="c1">#once we&#39;ve written this that is!</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> are the current way to describe the metadat about a python package like how it should be installed and who the author is etc, but typically you just copy the standard layouts and build from there. The empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file flags that this folder is a python module.</p>
+<p>pyproject.toml:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setuptools&gt;=4.2&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;setuptools.build_meta&quot;</span>
+</pre></div>
+</div>
+<p>requirements.txt</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipykernel</span>
+<span class="n">numpy</span>
+<span class="n">scipy</span>
+<span class="n">matplotlib</span>
+<span class="n">numba</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ipykernel</span></code> is there because it lets you run the envronment in a jupyter notebook easily.</p>
+<p>setup.cfg</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">metadata</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">MCFF</span>
+<span class="n">version</span> <span class="o">=</span> <span class="mf">0.0.1</span>
+<span class="n">author</span> <span class="o">=</span> <span class="n">Tom</span> <span class="n">Hodson</span>
+<span class="n">author_email</span> <span class="o">=</span> <span class="n">tch14</span><span class="nd">@ic</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">uk</span>
+<span class="n">description</span> <span class="o">=</span> <span class="n">A</span> <span class="n">small</span> <span class="n">example</span> <span class="n">package</span>
+<span class="n">long_description</span> <span class="o">=</span> <span class="n">file</span><span class="p">:</span> <span class="n">README</span><span class="o">.</span><span class="n">md</span>
+<span class="n">long_description_content_type</span> <span class="o">=</span> <span class="n">text</span><span class="o">/</span><span class="n">markdown</span>
+<span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">classifiers</span> <span class="o">=</span>
+    <span class="n">Programming</span> <span class="n">Language</span> <span class="p">::</span> <span class="n">Python</span> <span class="p">::</span> <span class="mi">3</span>
+    <span class="n">License</span> <span class="p">::</span> <span class="n">OSI</span> <span class="n">Approved</span> <span class="p">::</span> <span class="n">MIT</span> <span class="n">License</span>
+    <span class="n">Operating</span> <span class="n">System</span> <span class="p">::</span> <span class="n">OS</span> <span class="n">Independent</span>
+
+<span class="p">[</span><span class="n">options</span><span class="p">]</span>
+<span class="n">package_dir</span> <span class="o">=</span> 
+    <span class="o">=</span> <span class="n">src</span>
+<span class="n">packages</span> <span class="o">=</span> <span class="n">find</span><span class="p">:</span>
+<span class="n">python_requires</span> <span class="o">=</span> <span class="o">&gt;=</span><span class="mf">3.6</span>
+
+<span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">find</span><span class="p">]</span>
+<span class="n">where</span> <span class="o">=</span> <span class="n">src</span>
+</pre></div>
+</div>
+<p>Phew, that was a lot. Python packaging has been evolving a lot over the years and the consequence is there is a lot of out of date advice and there are many other ways to do this. You’re best bet to figure out what the current best practice is is to consult offical sources like python.org</p>
+<p>Once all that is setup, cd to the <code class="docutils literal notranslate"><span class="pre">code/</span></code> folder and install the module using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --editable .
+</pre></div>
+</div>
+<p>The dot means we should install MCFF from the current directory and <code class="docutils literal notranslate"><span class="pre">--editable</span></code> means to do it as an editable package so that we can edit the files in MCFF and not have to reinstall. This is really useful for development.</p>
+<p>In the next notebook, we will finally write the Markov Chain Monte Carlo function! And if you found yourself frustrated while dealing with python packaging, you can at least take solace in the fact that you’re not the only one:</p>
+<img style="max-width:700px;margin:auto;" src = "https://imgs.xkcd.com/comics/python_environment.png" alt = "An xkcd comic with a diagram of p values, saying that small ones are highly significant and giving humorous excuses for why larger ones are still intersting"></section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Packaging It Up</a><ul>
+<li><a class="reference internal" href="#directory-structure">Directory Structure</a></li>
+<li><a class="reference internal" href="#packaging">Packaging</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="01%20Introduction.html"
+                          title="previous chapter">Introduction</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html"
+                          title="next chapter">Writing a Markov Chain Monte Carlo Routine</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/learning/02 Packaging It Up.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html" title="Writing a Markov Chain Monte Carlo Routine"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="01%20Introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Packaging It Up</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

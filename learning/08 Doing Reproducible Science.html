@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Doing Reproducible Science &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adding Documentation" href="09%20Adding%20Documentation.html" />
+    <link rel="prev" title="Producing Research Outputs" href="07%20Producing%20Research%20Outputs.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="09%20Adding%20Documentation.html" title="Adding Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="07%20Producing%20Research%20Outputs.html" title="Producing Research Outputs"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Doing Reproducible Science</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1 align="center">Markov Chain Monte Carlo for fun and profit</h1>
+<h1 align="center"> 🎲 ⛓️ 👉 🧪 </h1><section id="doing-reproducible-science">
+<h1>Doing Reproducible Science<a class="headerlink" href="#doing-reproducible-science" title="Permalink to this heading">¶</a></h1>
+<p>Further Reading on this software reproducability: <a class="reference external" href="https://the-turing-way.netlify.app/reproducible-research/reproducible-research.html">The Turing Way: Guide to producing reproducable research</a></p>
+<p>In the last chapter we made a nice littel graph, let’s imagine we wanted to include that in a paper and we want other researchers to be able to understand and reproduce how it was generated.</p>
+<p>There are many aspects to this but I’ll list what I think is relevant here:</p>
+<ol class="arabic simple">
+<li><p>We have some code that generates the data and some code that uses it to plot the output, let’s split that into two python files.</p></li>
+<li><p>Our code has external dependencies on numpy and matplotlib, in the future those packages could change their behaviour in a way that breaks the code, so lets record what version our code is compatible with.</p></li>
+<li><p>We also have an internal dependency on other code in this MCFF repository, that could also change so let’s record the git hash of the commit where the code works for posterity.</p></li>
+<li><p>The data generating process is random so we’ll fix the seed as discussed in the testing section to make it reproducable.</p></li>
+</ol>
+<section id="making-a-reproducible-environment">
+<h2>Making a reproducible environment<a class="headerlink" href="#making-a-reproducible-environment" title="Permalink to this heading">¶</a></h2>
+<p>There are many ways to specify the versions of your python packages but the two most common are with a <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> or with an <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> is quite simple and just lists packages and versions i.e <code class="docutils literal notranslate"><span class="pre">numpy==1.21</span></code>that can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>, more details of the format <a class="reference external" href="https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format">here</a>. The problem with requirements.txt is that it can only tell you about software installable with pip, which is often not enough.</p>
+<p>Consequently, many people now use <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> files, which work with conda. There’s a great intro to all this <a class="reference external" href="https://imperialcollegelondon.github.io/grad_school_software_engineering_course/l1-01-tools-I/index.html">here</a> which I will not reproduce here. The gist of it is that we end up with a file that looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#contents of environment.yml</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">recode</span>
+
+<span class="n">channels</span><span class="p">:</span> <span class="c1"># tells us what conda channels we need to look in</span>
+  <span class="o">-</span> <span class="n">defaults</span>
+  <span class="o">-</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
+
+<span class="n">dependencies</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.9</span>
+  <span class="o">-</span> <span class="n">pytest</span><span class="o">=</span><span class="mf">7.1</span>
+  <span class="o">-</span> <span class="n">pytest</span><span class="o">-</span><span class="n">cov</span><span class="o">=</span><span class="mf">3.0</span>
+  <span class="o">-</span> <span class="n">ipykernel</span><span class="o">=</span><span class="mf">6.9</span>
+  <span class="o">-</span> <span class="n">numpy</span><span class="o">=</span><span class="mf">1.21</span>
+  <span class="o">-</span> <span class="n">scipy</span><span class="o">=</span><span class="mf">1.7</span>
+  <span class="o">-</span> <span class="n">matplotlib</span><span class="o">=</span><span class="mf">3.5</span>
+  <span class="o">-</span> <span class="n">numba</span><span class="o">=</span><span class="mf">0.55</span>
+  <span class="o">-</span> <span class="n">pre</span><span class="o">-</span><span class="n">commit</span>
+  <span class="o">-</span> <span class="n">pip</span><span class="o">=</span><span class="mf">21.2</span>
+  <span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
+      <span class="o">-</span> <span class="o">--</span><span class="n">editable</span> <span class="o">.</span> <span class="c1">#install MCFF from the local repository using pip and do it in editable mode</span>
+
+</pre></div>
+</div>
+<p>This file should be enough for another researcher to create an environment where they can run your code using a command like: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">-f</span> <span class="pre">environment.yml</span></code></p>
+<p>Generating these files is still a little annoying, the best way I found was to manually combine the output of two commands, <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">export</span> <span class="pre">--from-history</span></code> gives you just what you have manually installed into a given conda environment but not version numbers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>conda env <span class="nb">export</span> --from-history
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name: recode
+channels:
+  - defaults
+dependencies:
+  - pip=21.2
+  - pytest-cov=3.0
+  - python=3.9
+  - matplotlib=3.5
+  - scipy=1.7
+  - pre-commit
+  - numpy=1.21
+  - numba=0.55
+  - pytest=7.1
+  - ipykernel=6.9
+prefix: /Users/tom/miniconda3/envs/recode
+</pre></div>
+</div>
+</div>
+</div>
+<p>So I also output <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">export</span></code>, this is annoying because it also gives you dependencies. While the versions of dependencies coudl potentially be important we usually draw the line at just listing the version of directly required packages. So what I usually do is to take the above output and then use the the output of <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">export</span></code> to set the version numbers, leaving out the number because that indicates non-breaking changes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#output of conda env export</span>
+<span class="n">name</span><span class="p">:</span> <span class="n">recode</span>
+<span class="n">channels</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">defaults</span>
+<span class="n">dependencies</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">appnope</span><span class="o">=</span><span class="mf">0.1.2</span><span class="o">=</span><span class="n">py39hecd8cb5_1001</span>
+  <span class="o">-</span> <span class="n">asttokens</span><span class="o">=</span><span class="mf">2.0.5</span><span class="o">=</span><span class="n">pyhd3eb1b0_0</span>
+  <span class="o">-</span> <span class="n">attrs</span><span class="o">=</span><span class="mf">21.4.0</span><span class="o">=</span><span class="n">pyhd3eb1b0_0</span>
+  <span class="o">-</span> <span class="n">backcall</span><span class="o">=</span><span class="mf">0.2.0</span><span class="o">=</span><span class="n">pyhd3eb1b0_0</span>
+  <span class="o">-</span> <span class="n">blas</span><span class="o">=</span><span class="mf">1.0</span><span class="o">=</span><span class="n">mkl</span>
+  <span class="o">-</span> <span class="n">brotli</span><span class="o">=</span><span class="mf">1.0.9</span><span class="o">=</span><span class="n">hb1e8313_2</span>
+  <span class="o">-</span> <span class="n">ca</span><span class="o">-</span><span class="n">certificates</span><span class="o">=</span><span class="mf">2022.4.26</span><span class="o">=</span><span class="n">hecd8cb5_0</span>
+  <span class="o">-</span> <span class="n">certifi</span><span class="o">=</span><span class="mf">2022.6.15</span><span class="o">=</span><span class="n">py39hecd8cb5_0</span>
+  <span class="o">-</span> <span class="n">coverage</span><span class="o">=</span><span class="mf">6.3.2</span><span class="o">=</span><span class="n">py39hca72f7f_0</span>
+  <span class="o">-</span> <span class="n">many</span> <span class="n">many</span> <span class="n">more</span> <span class="n">lines</span> <span class="n">like</span> <span class="n">this</span><span class="o">...</span> <span class="n">sigh</span>
+</pre></div>
+</div>
+</section>
+<section id="spliting-the-code-into-files">
+<h2>Spliting the code into files<a class="headerlink" href="#spliting-the-code-into-files" title="Permalink to this heading">¶</a></h2>
+<p>To avoid you having to go away and find the files, I’ll just put them here. Let’s start with the file that generates the data. I’ll give it what I hope is an informative name and a shebang so that we can run it with <code class="docutils literal notranslate"><span class="pre">./generate_montecarlo_walkers.py</span></code> (after doing <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span> <span class="pre">generate_montecarlo_walkers.py</span></code> just once).</p>
+<p>I’ll set the seed using a large pregenerated seed, you’ve likely seen me use 42 in some places but that’s not really best practive because it might not be entropy to reliably seed the generator.</p>
+<p>I’ve also added some code that get’s the commit hash of MCFF and saves it into the data file along with the date. This helps us keep track of the generated data too.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### filename: generate_montecarlo_walkers.py #####</span>
+<span class="c1">#!/usr/bin/env python3</span>
+<span class="c1"># The above lets us run this script by just typing ./generate_montecarlo_walkers.py at the command line</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This script generates the data for the monte carlo walkers plot Fig. 2 in the paper {link} </span>
+<span class="sd">To regenerate the plot:</span>
+
+<span class="sd">$ conda env create -p ./env -f environment.yml # generate the environment in a local env folder</span>
+<span class="sd">$ conda active ./env # activate it</span>
+<span class="sd">$ python generate_montecarlo_walkers.py # creates data.pickle</span>
+<span class="sd">$ python plot_montecarlo_walkers.py # creates plot.pdf</span>
+
+<span class="sd">Last tested and working with MCFF commit hash 63523481e89ae8c8f74a900ae43b035e3312f9c8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="kn">import</span> <span class="nn">MCFF</span>
+<span class="kn">from</span> <span class="nn">MCFF.mcmc</span> <span class="kn">import</span> <span class="n">mcmc_generator</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+<span class="k">def</span> <span class="nf">get_module_git_hash</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+    <span class="s2">&quot;Get the commit hash of a module installed from a git repo with pip install -e .&quot;</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="p">)</span>
+
+
+<span class="n">seed</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">2937053738</span><span class="p">,</span>
+    <span class="mi">1783364611</span><span class="p">,</span>
+    <span class="mi">3145507090</span><span class="p">,</span>
+<span class="p">]</span>  <span class="c1"># generated once with rng.integers(2**63, size = 3) and then saved</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span>
+    <span class="n">seed</span>
+<span class="p">)</span>  <span class="c1"># This makes our random numbers reproducable when the notebook is rerun in order</span>
+
+<span class="c1">### The measurement we will make ###</span>
+<span class="k">def</span> <span class="nf">average_color</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+
+<span class="c1">### Simulation Inputs ###</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># Use an NxN system</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># What temperatures to use</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="mi">200</span>  <span class="c1"># How many times to sample the state</span>
+<span class="n">stepsize</span> <span class="o">=</span> <span class="n">N</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># How many individual monte carlo flips to do in between each sample</span>
+<span class="n">N_repeats</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># How many times to repeat each run at fixed temperature</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>  <span class="c1"># the intial state to use</span>
+<span class="n">flips</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="o">*</span> <span class="n">stepsize</span>
+<span class="p">)</span>  <span class="c1"># Use this to plot the data in terms of individual flip attemps</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span>
+    <span class="n">Ts</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span>
+    <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+    <span class="n">N_repeats</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">initial_state</span><span class="o">=</span><span class="n">initial_state</span><span class="p">,</span>
+    <span class="n">flips</span><span class="o">=</span><span class="n">flips</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1">### Simulation Code ###</span>
+<span class="n">average_color_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="n">average_color</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">mcmc_generator</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_repeats</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">Ts</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">MCFF_commit_hash</span><span class="o">=</span><span class="n">get_module_git_hash</span><span class="p">(</span><span class="n">MCFF</span><span class="p">),</span>
+    <span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+    <span class="n">average_color_data</span><span class="o">=</span><span class="n">average_color_data</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># save the data to data.pickle</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;./walkers_plot/data.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">][</span><span class="s2">&quot;initial_state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;removed for brevity&quot;</span>
+<span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">][</span><span class="s2">&quot;flips&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;removed for brevity&quot;</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;MCFF_commit_hash&#39;: &#39;63523481e89ae8c8f74a900ae43b035e3312f9c8&#39;,
+ &#39;date&#39;: datetime.datetime(2022, 7, 17, 13, 32, 27, 380270, tzinfo=datetime.timezone.utc),
+ &#39;inputs&#39;: {&#39;N&#39;: 20,
+  &#39;Ts&#39;: [10, 4.5, 3],
+  &#39;steps&#39;: 200,
+  &#39;stepsize&#39;: 400,
+  &#39;N_repeats&#39;: 10,
+  &#39;initial_state&#39;: &#39;removed for brevity&#39;,
+  &#39;flips&#39;: &#39;removed for brevity&#39;},
+ &#39;average_color_data&#39;: array([[[ 0.565,  0.27 ,  0.195, ...,  0.025,  0.075,  0.055],
+         [ 0.61 ,  0.45 ,  0.24 , ...,  0.06 ,  0.045, -0.005],
+         [ 0.595,  0.385,  0.2  , ...,  0.1  ,  0.01 , -0.055],
+         ...,
+         [ 0.64 ,  0.405,  0.3  , ...,  0.06 ,  0.06 ,  0.035],
+         [ 0.685,  0.41 ,  0.175, ...,  0.035,  0.09 ,  0.045],
+         [ 0.74 ,  0.435,  0.32 , ..., -0.06 ,  0.015,  0.025]],
+ 
+        [[ 0.96 ,  0.895,  0.875, ...,  0.44 ,  0.445,  0.385],
+         [ 0.94 ,  0.885,  0.905, ...,  0.18 ,  0.18 ,  0.11 ],
+         [ 0.93 ,  0.915,  0.9  , ...,  0.635,  0.625,  0.595],
+         ...,
+         [ 0.965,  0.9  ,  0.855, ...,  0.815,  0.805,  0.835],
+         [ 0.98 ,  0.945,  0.88 , ...,  0.535,  0.515,  0.555],
+         [ 0.95 ,  0.875,  0.81 , ...,  0.68 ,  0.735,  0.67 ]],
+ 
+        [[ 0.995,  0.995,  0.97 , ...,  0.975,  0.97 ,  0.985],
+         [ 0.995,  0.985,  0.975, ...,  0.95 ,  0.93 ,  0.93 ],
+         [ 1.   ,  0.985,  0.98 , ...,  0.965,  0.95 ,  0.96 ],
+         ...,
+         [ 0.99 ,  0.975,  0.965, ...,  0.965,  0.96 ,  0.97 ],
+         [ 0.98 ,  0.985,  0.96 , ...,  0.97 ,  0.98 ,  0.96 ],
+         [ 0.985,  0.965,  0.97 , ...,  0.985,  0.975,  0.97 ]]])}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### filename: plot_montecarlo_walkers.py ######</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># This loads some custom styles for matplotlib</span>
+<span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">matplotlib</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;assets/matplotlibrc.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;./walkers_plot/data.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># splat the keys and values back into the global namespace,</span>
+<span class="c1"># beware that this could overwrite previously defined variables like &#39;count&#39; by accident</span>
+<span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
+    <span class="n">nrows</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">sharey</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">,</span>
+    <span class="n">sharex</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="p">,</span>
+    <span class="n">gridspec_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">width_ratios</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">hist_ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">count</span><span class="p">(),</span> <span class="n">axes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">average_color_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">indiv_line</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">flips</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">mean_line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">flips</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">hist_ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;T = </span><span class="si">{</span><span class="n">Ts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Monte Carlo Flip Attempts&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Probability Density&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Average Color $\langle c \rangle$&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="n">mean_line</span><span class="p">,</span> <span class="n">indiv_line</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Mean&quot;</span><span class="p">,</span> <span class="s2">&quot;Individual walker&quot;</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;./walkers_plot/plot.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3f2f1241d028f61a267ed02df4a638784256a216c03aa343ee9cb297a89cb8e1.png" src="../_images/3f2f1241d028f61a267ed02df4a638784256a216c03aa343ee9cb297a89cb8e1.png" />
+</div>
+</div>
+</section>
+<section id="citations-and-dois">
+<h2>Citations and DOIs<a class="headerlink" href="#citations-and-dois" title="Permalink to this heading">¶</a></h2>
+<p>Now that we have a nicely reproducable plot, let’s share it with the world. The easiest way is probably to put your code in a hosted git repository like Github or Gitlab.</p>
+<p>Next, let’s mint a shiny Digital Object Identifier (DOI) for the repository, using something like <a class="reference external" href="https://zenodo.org/">Zenodo</a>. These services archive a snapshot of the repository and assign a DOI to that snapshot, this is realy useful for citing a particular version of the software.</p>
+<p>Finally let’s add a <code class="docutils literal notranslate"><span class="pre">citation.cff</span></code> file to the root of the repository, this makes it easier for people who might cite this software to generate a good citation for it. We can add the zenodo DOI to it too. You can read more about <code class="docutils literal notranslate"><span class="pre">citation.cff</span></code> files <a class="reference external" href="https://citation-file-format.github.io/">here</a> and there is a convenient generator tool <a class="reference external" href="https://citation-file-format.github.io/cff-initializer-javascript/">here</a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Doing Reproducible Science</a><ul>
+<li><a class="reference internal" href="#making-a-reproducible-environment">Making a reproducible environment</a></li>
+<li><a class="reference internal" href="#spliting-the-code-into-files">Spliting the code into files</a></li>
+<li><a class="reference internal" href="#citations-and-dois">Citations and DOIs</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="07%20Producing%20Research%20Outputs.html"
+                          title="previous chapter">Producing Research Outputs</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="09%20Adding%20Documentation.html"
+                          title="next chapter">Adding Documentation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/learning/08 Doing Reproducible Science.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="09%20Adding%20Documentation.html" title="Adding Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="07%20Producing%20Research%20Outputs.html" title="Producing Research Outputs"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Doing Reproducible Science</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

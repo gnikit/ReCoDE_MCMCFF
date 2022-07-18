@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Testing &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adding Functionality" href="05%20Adding%20Functionality.html" />
+    <link rel="prev" title="Writing a Markov Chain Monte Carlo Routine" href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="05%20Adding%20Functionality.html" title="Adding Functionality"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html" title="Writing a Markov Chain Monte Carlo Routine"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Testing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1 align="center">Markov Chain Monte Carlo for fun and profit</h1>
+<h1 align="center"> 🎲 ⛓️ 👉 🧪 </h1>
+<section id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h1>
+<p>Further reading on Testing:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pytest.org/en/7.1.x/getting-started.html">The official Pytest docs</a></p></li>
+<li><p><a class="reference external" href="https://the-turing-way.netlify.app/reproducible-research/testing.html">The Turing Way</a></p></li>
+<li><p><a class="reference external" href="https://imperialcollegelondon.github.io/grad_school_software_engineering_course/l2-01-testing_overview/index.html">Essential Software Engineering for Researchers</a></p></li>
+</ul>
+<p>Ok we can finally start writing and running some tests!</p>
+<p>I copied some of the initial tests that we did in chapter 1 into <code class="docutils literal notranslate"><span class="pre">test_energy.py</span></code> installed pytest into my development environment with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pytest</span></code>. If you’re using conda you need to use <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">pytest</span></code> and now I can run the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> command in the ReCoDE_MCFF directory. Pytest will automatically discover our tests and run them, to do this it relies on their being python files with functions named <code class="docutils literal notranslate"><span class="pre">test_\*</span></code> which it will run.</p>
+<p>If that doesn’t work and complains it can’t find MCFF, try <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span></code>, this asks python to find a module and run it, which can be useful to ensure you’re running pytest inside the correct environment. I ran into this problem because I used <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pytest</span></code> into a conda environment when I should have done <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">pytest</span></code>.</p>
+<p>But hopefully you can get it working and get a lovely testy output! I’ve embedded a little video of this below but if it doesn’t load, check out the <a class="reference external" href="https://asciinema.org/a/498583">link</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%html</span> 
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;max-width:700px;margin:auto;&quot;</span><span class="p">&gt;&lt;</span><span class="nt">script</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;asciicast-498583&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://asciinema.org/a/498583.js&quot;</span> <span class="na">async</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div style="max-width:700px;margin:auto;"><script id="asciicast-498583" src="https://asciinema.org/a/498583.js" async></script></div>
+</div></div>
+</div>
+<p>We can also add a few lines to <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> to tell pytest where to find our tests:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.pytest.ini_options]</span><span class="w"></span>
+<span class="n">minversion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;6.0&quot;</span><span class="w"></span>
+<span class="n">testpaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;tests&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</pre></div>
+</div>
+<section id="basic-testing-with-pytest">
+<h2>Basic Testing with Pytest<a class="headerlink" href="#basic-testing-with-pytest" title="Permalink to this heading">¶</a></h2>
+<p>Take a look at <code class="docutils literal notranslate"><span class="pre">tests/test_energy.py</span></code>. You can see that I’ve done some imports, setup some test states and then defined two testing functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note that only functions whose name begins with test_ get run by pytest</span>
+<span class="k">def</span> <span class="nf">E_prediction_all_the_same</span><span class="p">(</span><span class="n">L</span><span class="p">):</span> 
+    <span class="s2">&quot;The exact energy in for the case where all spins are up or down&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">L</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">12</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_exact_energies</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">all_up</span><span class="p">,</span> <span class="n">all_down</span><span class="p">]:</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">energy</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">==</span> <span class="n">E_prediction_all_the_same</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>I will defer to external resources for a full discussion of the philosphy of testing but I generally think of tests as an aid to my future debugging. If I make a change that breaks something then I want my tests to catch that and to make it clear what has broken. As such I generally put tests that check very basic properties of my code early on in the file and then follow them with tests that probe more subtle things or more obscure edges cases.</p>
+<p><code class="docutils literal notranslate"><span class="pre">test_exact_energies</span></code> checks that the energies of our exact states come out as we calculated they should in chapter 1. This is testing a very limited space of the possible inputs to <code class="docutils literal notranslate"><span class="pre">energy</span></code> so we’d like to find some way to be more confident that our implementation is correct.</p>
+<p>One was is to test multiple independant implementations against one another: <code class="docutils literal notranslate"><span class="pre">test_energy_implementations</span></code> checks our numpy implementation against our numba one. This should catch implementation bugs because it’s unlikely we will make the same such error in both implementations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_energy_implementations</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">energy</span><span class="p">(</span><span class="n">state</span><span class="p">),</span> <span class="n">energy_numpy</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>However if we have made some logical errors in how we’ve defined the energy, that error will likely appear in both implememtations and thus won’t be caught by this.</p>
+<p>Generally what we will do now, is that as we write more code or add new functionality we will add tests to check that functionality.</p>
+</section>
+<section id="coverage-testing">
+<h2>Coverage Testing<a class="headerlink" href="#coverage-testing" title="Permalink to this heading">¶</a></h2>
+<p>A useful little trick for testing, are tools like pytest-cov that can measure <em>coverage</em>, that is, the amount of your code base that is activate by your tests. Unfortunatley Numba does not play super well with pytest-cov so we have to turn off numba to generate the test report using an environment variable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>recode<span class="o">)</span> tom@TomsLaptop ReCoDE_MCMCFF % pip install pytest-cov <span class="c1"># install the coverage testing plugin</span>
+<span class="o">(</span>recode<span class="o">)</span> tom@TomsLaptop ReCoDE_MCMCFF % <span class="nv">NUMBA_DISABLE_JIT</span><span class="o">=</span><span class="m">1</span> pytest --cov<span class="o">=</span>MCFF --cov-report<span class="o">=</span><span class="nv">term</span>
+
+<span class="o">==================================================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">==================================================</span>
+platform darwin -- Python <span class="m">3</span>.9.12, pytest-7.1.1, pluggy-1.0.0
+rootdir: /Users/tom/git/ReCoDE_MCMCFF
+plugins: hypothesis-6.46.10, cov-3.0.0
+collected <span class="m">3</span> items                                                                                                       
+
+code/tests/test_energy.py ..                                                                                      <span class="o">[</span> <span class="m">66</span>%<span class="o">]</span>
+code/tests/test_energy_using_hypothesis.py .                                                                      <span class="o">[</span><span class="m">100</span>%<span class="o">]</span>
+
+---------- coverage: platform darwin, python <span class="m">3</span>.9.12-final-0 ----------
+Name                           Stmts   Miss  Cover
+--------------------------------------------------
+code/src/MCFF/__init__.py          <span class="m">0</span>      <span class="m">0</span>   <span class="m">100</span>%
+code/src/MCFF/ising_model.py      <span class="m">22</span>      <span class="m">3</span>    <span class="m">86</span>%
+code/src/MCFF/mcmc.py             <span class="m">14</span>     <span class="m">14</span>     <span class="m">0</span>%
+--------------------------------------------------
+TOTAL                             <span class="m">36</span>     <span class="m">17</span>    <span class="m">53</span>%
+
+
+<span class="o">===================================================</span> <span class="m">3</span> passed <span class="k">in</span> <span class="m">1</span>.89s <span class="o">===================================================</span>
+</pre></div>
+</div>
+<p>Ok so this is telling us that we currently test 86% of the lines in ising_model.py. We can also change <code class="docutils literal notranslate"><span class="pre">--cov-report=html</span></code> to get a really nice html output which shows which parts of your code aren’t being run.</p>
+<p>A warning though, testing 100% of your lines of code doesn’t mean it’s correct, you need to think carefully about the data you test on, try to pick the hardest examples you can think of! What edge cases might there be that would break your code? Zero, empty strings and empty arrays are classic examples.</p>
+</section>
+<section id="advanced-testing-methods-property-based-testing">
+<h2>Advanced Testing Methods: Property Based Testing<a class="headerlink" href="#advanced-testing-methods-property-based-testing" title="Permalink to this heading">¶</a></h2>
+<p>I won’t do into huge detail here but I thought it would be nice to make you aware of a nice library called <code class="docutils literal notranslate"><span class="pre">Hypothesis</span></code> that helps with this problem of finding edge cases. <code class="docutils literal notranslate"><span class="pre">Hypothesis</span></code> gives you tools to generate randomised inputs to functions, so as long as you can come up with some way to verify the output is correct or has the correct <em>properties</em> (or just that the code doens’t throw and error!) then this can be a powerful method of testing.</p>
+<p>Take a look in <code class="docutils literal notranslate"><span class="pre">test_energy_using_hypothesis.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hypothesis.extra</span> <span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">hnp</span>
+
+<span class="nd">@given</span><span class="p">(</span><span class="n">hnp</span><span class="o">.</span><span class="n">arrays</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">shape</span> <span class="o">=</span> <span class="n">hnp</span><span class="o">.</span><span class="n">array_shapes</span><span class="p">(</span><span class="n">min_dims</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">max_dims</span> <span class="o">=</span> <span class="mi">2</span><span class="p">),</span>
+                 <span class="n">elements</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sampled_from</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+<span class="k">def</span> <span class="nf">test_generated_states</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">energy</span><span class="p">(</span><span class="n">state</span><span class="p">),</span> <span class="n">energy_numpy</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You tell Hypothesis how to generate the test data, in this case we use some numpy specifc code to generate 2 dimensional arrays with <code class="docutils literal notranslate"><span class="pre">dtype</span> <span class="pre">=</span> <span class="pre">int</span></code> and entries randomly sampled from <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">-1]</span></code>. We use the same trick as before of checking two implementations against one another.</p>
+</section>
+<section id="testing-stochastic-code">
+<h2>Testing Stochastic Code<a class="headerlink" href="#testing-stochastic-code" title="Permalink to this heading">¶</a></h2>
+<p>We have a interesting problem here, most testing assumes that for the same inputs we will always get the same outputs but our MCMC sampler is a stochastic algorithm. So how can we test it? I can see three mains routes we can take:</p>
+<ul class="simple">
+<li><p>Fix the seed of the random number generator to make it deterministic</p></li>
+<li><p>Do statistical tests on the output</p></li>
+<li><p>Use property based testing (see above)</p></li>
+</ul>
+<section id="fixed-seeds">
+<h3>Fixed Seeds<a class="headerlink" href="#fixed-seeds" title="Permalink to this heading">¶</a></h3>
+<p>The random number generators we typically use are really pseudo-random number generators: given a value called a seed they generate a deterministic pattern that looks for most purposes like a random sequence. Typically the seed is determined by something that is <em>more random</em> such as a physical random number generator. However if we fix the seed we can create reproducabile plots and test our code more easily!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seed</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">2937053738</span><span class="p">,</span>
+    <span class="mi">1783364611</span><span class="p">,</span>
+    <span class="mi">3145507090</span><span class="p">,</span>
+<span class="p">]</span>  <span class="c1"># generated once with rng.integers(2**63, size = 3) and then saved</span>
+
+<span class="c1"># New Style</span>
+<span class="c1"># numba doesn&#39;t yet support this so I haven&#39;t used it in our code</span>
+<span class="c1"># but if you aren&#39;t using numba then you should get used to this new style)</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">default_rng</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">23</span><span class="p">)</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Old style</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">random</span>
+
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">vals2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">vals</span><span class="p">,</span> <span class="n">vals2</span>  <span class="c1"># note that the two styles do no give the same results</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([ 0.55326059,  0.21760061, -0.05798999, -2.31893609,  0.43149417,
+        -2.12627978,  0.90992122,  0.60596557,  0.83005665,  0.82769834]),
+ array([-0.57820285, -0.65570117,  1.60871517, -0.83666294,  2.03363763,
+         0.44904314,  0.31099544, -0.85810422, -0.87923828,  0.96426779]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>However this has a major drawback, if we want this to work we must always generate the same random numbers in the same order and use them in the same way if we want the output to be the same. This is a problem because we might want to make a change to our MCMC sampler in a way that changes the way it call the rng but still want to compare it to the previous version. In this case we have to use statistical tests instead.</p>
+</section>
+<section id="statistical-tests">
+<h3>Statistical Tests<a class="headerlink" href="#statistical-tests" title="Permalink to this heading">¶</a></h3>
+<p>If we want to verify that two different implementations of our algorithm agree or that the output matches our expectations, we can use something like a t-test to check our samples. Now this gets complicated very fast but bear with me for this simple example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">MCFF.mcmc</span> <span class="kn">import</span> <span class="n">mcmc_generator</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+
+<span class="c1">### The measurement we will make ###</span>
+<span class="k">def</span> <span class="nf">average_color</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+
+<span class="c1">### Simulation Inputs ###</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Use an NxN system</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">1000</span>  <span class="c1"># What temperatures to use</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="mi">2000</span>  <span class="c1"># How many times to sample the state</span>
+<span class="n">stepsize</span> <span class="o">=</span> <span class="n">N</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># How many individual monte carlo flips to do in between each sample</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>  <span class="c1"># the initial state to use</span>
+
+<span class="c1">### Simulation Code ###</span>
+<span class="n">average_color_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">average_color</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">mcmc_generator</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+
+<span class="n">mean</span><span class="p">,</span> <span class="n">std_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">)</span>
+<span class="n">std_error</span> <span class="o">=</span> <span class="n">std_dev</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+
+<span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_1samp</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">pvalue</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Over </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> samples we got an average color of </span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">std_dev</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">That&#39;s </span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">std_dev</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%</span>
+
+<span class="s2">The standard error of the mean is about </span><span class="si">{</span><span class="n">std_err</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%</span>
+
+<span class="s2">The p value when comparing that with 0 is </span><span class="si">{</span><span class="n">p_value</span><span class="si">:</span><span class="s2">.2g</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">p &gt; 0.1 : </span><span class="si">{</span><span class="n">p_value</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="si">}</span><span class="s2"></span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="p">)</span>
+<span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">average_color_data</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;dotted&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Mean&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">mean</span> <span class="o">+</span> <span class="n">std_dev</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Std Error&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">mean</span> <span class="o">-</span> <span class="n">std_dev</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Over 10 samples we got an average color of -0.00253 +/- 0.100466
+That&#39;s -0.00253 +/- 3971%
+
+The standard error of the mean is about 91%
+
+The p value when comparing that with 0 is 0.26
+p &gt; 0.1 : True
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f8ac6ad04f0&gt;
+</pre></div>
+</div>
+<img alt="../_images/aa6e1e0f29b9f7d6e588a6ed70b8ee1a37f4b875a5dc3a65d3fc1d5df407d8d4.png" src="../_images/aa6e1e0f29b9f7d6e588a6ed70b8ee1a37f4b875a5dc3a65d3fc1d5df407d8d4.png" />
+</div>
+</div>
+<p>There are three things happening here:</p>
+<ol class="arabic simple">
+<li><p>We are taking 2000 samples of a random variable X, those samples has some mean $m$ and standard deviation $\sigma_X$, the mean is the center of mass of the above histogram and the standard deviation is a measure of how wide it is.</p></li>
+<li><p>However what we actually want to do is ask “How close is the mean to 0?”, to answer that we need to know how much we expect the mean to vary by when we rerun the calculation. Turns the mean of N samples of a variable X then the mean varies by
+$$\sigma_m = \sigma_X / \sqrt{N}$$
+this is usually called the standard error of the mean.</p></li>
+<li><p>Each time we run this code, we estimate the mean and the standard error of the mean, when it comes out to be a lot more than 100% then our t-test is very confident that the data is consistent with the true mean being 0. However when it’s less than 100% we get a smaller p_value and this is saying that we should suspect that maybe the mean is not 0 after all.</p></li>
+</ol>
+<img style="max-width:700px;margin:auto;" src = "https://imgs.xkcd.com/comics/p_values.png" alt = "An xkcd comic with a diagram of p values, saying that small ones are highly significant and giving humorous excuses for why larger ones are still intersting"><p>So to do our test, we check that the p value is less than some arbitrary cutoff such as 0.1 or 0.01. This test should usually pass if the mean is in fact close to zero and it should fail if the mean is not zero. However due to random variation it can also fail randomly.</p>
+<p>This is just one of those things that you can’t really do anything about. Incidentally this can be used in reverse to generate fake “highly significant” scientific results in a practice called p-hacking. As usual XKCD has <a class="reference external" href="https://xkcd.com/882/">explained this</a> better than I ever could.</p>
+</section>
+</section>
+<section id="test-driven-development">
+<h2>Test Driven Development<a class="headerlink" href="#test-driven-development" title="Permalink to this heading">¶</a></h2>
+<p>I won’t talk about TDD much here but it’s likely a term you will hear at some point. It essentially referes to the practice of writing tests as part of your process of writing code. Rather than writing all your code and then writing tests for them. You could instead write some or all of your tests upfront and then write code that passes them.</p>
+<p>This can be an incredibly prodctive way to work, it forces you think about the structure and interface of your software before you start writing it. It aslo gives you nice incremental goals that you can tick off once each test starts to pass, gamification maybe?</p>
+</section>
+<section id="autoformaters">
+<h2>Autoformaters<a class="headerlink" href="#autoformaters" title="Permalink to this heading">¶</a></h2>
+<p>Further reading on the topic of autoformatters:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://the-turing-way.netlify.app/reproducible-research/code-quality/code-quality-style.html">The Turing Way</a></p></li>
+<li><p><a class="reference external" href="https://imperialcollegelondon.github.io/grad_school_software_engineering_course/l1-02-tools-II/index.html">Essential Software Engineering for Researchers</a></p></li>
+</ul>
+<p>While we’re doing things that will help keep our code clean and tidy in the future, I would recommend installing a code formatter like <code class="docutils literal notranslate"><span class="pre">black</span></code>. This is a program that enforces a particular formatting style on your code by simply doing it for you. At first this sounds a bit weird, but it has a few benefits:</p>
+<ul class="simple">
+<li><p>It makes git diffs as small as possible because formatting changes never show up</p></li>
+<li><p>It means you never have to discuss with your collaborators about code formatting, something which can waste a lot of time!</p></li>
+</ul>
+<p>Here I will show you how to setup <code class="docutils literal notranslate"><span class="pre">black</span></code> as a pre-commit hook, this means it runs before you commit anything to git, which is probably the best time to do it. We’ll use a helper tool called <a class="reference external" href="https://pre-commit.com/">pre-commit</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install pre-commit
+pre-commit sample-config &gt;&gt; .pre-commit-config.yaml <span class="c1"># Generate an initial config</span>
+</pre></div>
+</div>
+<p>Now we add some additional lines to the <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code> config file to setup black:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/psf/black</span><span class="w"></span>
+<span class="w">    </span><span class="nt">rev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21.12b0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">hooks</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">black</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">black-jupyter</span><span class="w"></span>
+</pre></div>
+</div>
+<p>And finally <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span></code> will make this run every time you commit to git. It’s worth running it manually once the first time to check it works: <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code>. Running this I immediatly got a cryptic error that, on googling, turned out to be that something broke in version 21.12b0 of <code class="docutils literal notranslate"><span class="pre">21.12b0</span></code>. Running <code class="docutils literal notranslate"><span class="pre">precommit</span> <span class="pre">autoupdate</span></code> fixed this for me by updated <code class="docutils literal notranslate"><span class="pre">black</span></code> to a later version. Running <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code> a second time now gives me:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>recode<span class="o">)</span> tom@TomsLaptop ReCoDE_MCMCFF % pre-commit run --all-files
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...........................................<span class="o">(</span>no files to check<span class="o">)</span>Skipped
+check <span class="k">for</span> added large files..............................................Passed
+black....................................................................Passed
+<span class="o">(</span>recode<span class="o">)</span> tom@TomsLaptop ReCoDE_MCMCFF % 
+</pre></div>
+</div>
+<p>Now whenever you commit anything, <code class="docutils literal notranslate"><span class="pre">black</span></code> will autoformat it before it actually gets commited. I’ll test this for myself by putting</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ugly_litte_one_liner</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">):</span> <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="o">/</span><span class="mf">2.</span> <span class="o">+</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>in a code cell below and we’ll see how <code class="docutils literal notranslate"><span class="pre">black</span></code> formats it. The only gotcha here is that you have to reload jupyter notebooks from disk in order to see the changes that <code class="docutils literal notranslate"><span class="pre">black</span></code> makes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ugly_litte_one_liner</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, be aware that if you try to commit code with incorrect syntax then black will just error and prevent it, this is probably a good thing but there may be the occasional time where that’s a problem.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Testing</a><ul>
+<li><a class="reference internal" href="#basic-testing-with-pytest">Basic Testing with Pytest</a></li>
+<li><a class="reference internal" href="#coverage-testing">Coverage Testing</a></li>
+<li><a class="reference internal" href="#advanced-testing-methods-property-based-testing">Advanced Testing Methods: Property Based Testing</a></li>
+<li><a class="reference internal" href="#testing-stochastic-code">Testing Stochastic Code</a><ul>
+<li><a class="reference internal" href="#fixed-seeds">Fixed Seeds</a></li>
+<li><a class="reference internal" href="#statistical-tests">Statistical Tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#test-driven-development">Test Driven Development</a></li>
+<li><a class="reference internal" href="#autoformaters">Autoformaters</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html"
+                          title="previous chapter">Writing a Markov Chain Monte Carlo Routine</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="05%20Adding%20Functionality.html"
+                          title="next chapter">Adding Functionality</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/learning/04 Testing.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="05%20Adding%20Functionality.html" title="Adding Functionality"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="03%20Writing%20a%20Markov%20Chain%20Monte%20Carlo%20Sampler.html" title="Writing a Markov Chain Monte Carlo Routine"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Testing</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

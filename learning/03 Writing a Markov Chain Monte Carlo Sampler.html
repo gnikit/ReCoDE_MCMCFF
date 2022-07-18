@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Writing a Markov Chain Monte Carlo Routine &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Testing" href="04%20Testing.html" />
+    <link rel="prev" title="Packaging It Up" href="02%20Packaging%20It%20Up.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="04%20Testing.html" title="Testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="02%20Packaging%20It%20Up.html" title="Packaging It Up"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Writing a Markov Chain Monte Carlo Routine</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1 align="center">Markov Chain Monte Carlo for fun and profit</h1>
+<h1 align="center"> 🎲 ⛓️ 👉 🧪 </h1><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
+
+<span class="c1"># This loads some custom styles for matplotlib</span>
+<span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">matplotlib</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;assets/matplotlibrc.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span>
+    <span class="mi">42</span>
+<span class="p">)</span>  <span class="c1"># This makes our random numbers reproducable when the notebook is rerun in order</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="writing-a-markov-chain-monte-carlo-routine">
+<h1>Writing a Markov Chain Monte Carlo Routine<a class="headerlink" href="#writing-a-markov-chain-monte-carlo-routine" title="Permalink to this heading">¶</a></h1>
+<p>Right now we have:</p>
+<ol class="arabic simple">
+<li><p>A function to evaluate the energy of a state</p></li>
+<li><p>That code now lives in a python module called MCFF that we can import</p></li>
+<li><p>We’ve also got some nice tests running that give us some confidence the code is right.</p></li>
+</ol>
+<p>There isn’t that much more work to do Markov Chain Monte Carlo. I won’t go into the details of how MCMC works but put very simply MCMC lets us calculate thermal averages of a physical system at some temperature. For example, the physical system might be “<a class="reference external" href="https://www.wolframalpha.com/input?i=%28mass+of+1+litre+of+water+%29%2F%28molecular+weight+of+H2O+*+atomic+mass%29">$10^{23}$</a> H20 molecules in a box” and the thermal average we want is “Are they organised like a solid or a liquid?”. We can ask that question at different temperatures and we will get different answers.</p>
+<p>For our Ising model the equivalent question would be what’s the average color of this system? At high temperatures we expect the pixels to be random and average out ot grey, while at low temperatures they will all be either black or while.</p>
+<p>What happens in between? This question is pretty hard to answer using maths, it can be done for the 2D Ising model but for anything more complicated it’s pretty much impossible. This is where MCMC comes in.</p>
+<p>MCMC is a numerical method that lets us calculate these thermal averages. MCMC is essentially a description of how to probalistically step from one state of the system to another.</p>
+<p>If we perform these steps many times we get a (Markov) chain of states. The great thing about this chain is that if we average a measurement over it, such as looking at the average proportion of white pixels, the answer we get will be close to the real answer for this system and will converge closer and closer to the true answer as we extend the chain.</p>
+<p>I’ve written a very basic MCMC sampler for the 2D Ising model below. It needs:</p>
+<ul class="simple">
+<li><p>an initial place to start the chain from</p></li>
+<li><p>how many steps to take</p></li>
+<li><p>the temperature we want to simulate at</p></li>
+<li><p>a way to measure the energy of a state, which we wrote in a previous chapter</p></li>
+</ul>
+<p>It then loops over:</p>
+<ul class="simple">
+<li><p>modify the state a little, here we just flip one bond</p></li>
+<li><p>accepting $p = \exp(-\Delta_E / T)$ based on how the energy changed</p></li>
+<li><p>if we rejected, change the state back to how it was</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MCFF.ising_model</span> <span class="kn">import</span> <span class="n">energy</span><span class="p">,</span> <span class="n">show_state</span>
+
+<span class="c1"># While writing numba it&#39;s useful to keep the list of supported numpy functions open:</span>
+<span class="c1"># https://numba.pydata.org/numba-doc/dev/reference/numpysupported.html</span>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">):</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">N</span> <span class="o">==</span> <span class="n">M</span>
+
+    <span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+        <span class="c1"># modify the state a little, here we just flip a random pixel</span>
+        <span class="n">current_state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">new_E</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">new_E</span> <span class="o">&lt;</span> <span class="n">E</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">new_E</span> <span class="o">-</span> <span class="n">E</span><span class="p">)</span> <span class="o">/</span> <span class="n">T</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">():</span>
+            <span class="n">E</span> <span class="o">=</span> <span class="n">new_E</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># reject the change we made</span>
+
+    <span class="k">return</span> <span class="n">current_state</span>
+
+
+<span class="n">Ts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+
+<span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+<span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="n">ncols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">ncols</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Initial state&quot;</span><span class="p">)</span>
+<span class="n">show_state</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">T</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Ts</span><span class="p">,</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+    <span class="c1"># initial_state = rng.choice([1,-1], size = (50,50))</span>
+
+    <span class="n">final_state</span> <span class="o">=</span> <span class="n">mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">show_state</span><span class="p">(</span><span class="n">final_state</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;T = </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7f1ab0a58907738ccd025e73b66ab99f5e9697472177b50d7bc8094c8f174213.png" src="../_images/7f1ab0a58907738ccd025e73b66ab99f5e9697472177b50d7bc8094c8f174213.png" />
+</div>
+</div>
+<p>These images give a flavour of why physicists find this model useful, it gives window into how thermal noise and spontaneous order interact. At low temperatures the energy cost of being different from your neighbours is the most important thing, while at high temperatures, it doesn’t matter and you really just do your own thing.</p>
+<p>There’s a special point somewhere in the middle called the critical point $T_c$ where all sorts of cool things happen, but my favourite is that for large system sizes you get a kind of fractal behaviour which I will demonstrate more once we’ve sped this code up and can simulate larger systems in a reasonable time. You can kinda see it for 50x50 systesm at T = 5 but not really clearly.</p>
+<section id="where-do-we-go-from-here">
+<h2>Where do we go from here?<a class="headerlink" href="#where-do-we-go-from-here" title="Permalink to this heading">¶</a></h2>
+<p>The code we have so far is really just a sketch of a solution. So this is a good time to step back and think about what are aims are and how this software will fulfil them. I see three broad areas on which it needs improvement:</p>
+<p><strong>Functionality</strong>
+Right now we can’t really do much except print nice pictures of states, but (within the fiction of this project) we really want to be able to do science! So we need to think about what measurements and observations we might want to make and how that might affect the structure of our code.</p>
+<p><strong>Testing</strong>
+I’ve already missed at least one devastating bug in this code, and there are almost certainly more! Before we start adding too much new code we should think about how to increase our confidence that the individual components are working correctly. It’s very easy to build a huge project out of hundreds of functions, realise there’s a bug and then struggle to find the source of that bug. If we test our components individually and thoroughly, we can avoid some of that pain.</p>
+<p><strong>Performance</strong>
+Performance only matters in so far as it limits what we can do. And there is a real danger that trying to optimise for performance too early or in the wrong places will just lead to complexity that makes the code harder to read, harder to write and more likely to contain bugs. However I do want to show you the fractal states at the critical point, and I can’t currently generate those images in a reasonable time, so some optimisation will happen!</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Writing a Markov Chain Monte Carlo Routine</a><ul>
+<li><a class="reference internal" href="#where-do-we-go-from-here">Where do we go from here?</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="02%20Packaging%20It%20Up.html"
+                          title="previous chapter">Packaging It Up</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="04%20Testing.html"
+                          title="next chapter">Testing</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/learning/03 Writing a Markov Chain Monte Carlo Sampler.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="04%20Testing.html" title="Testing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="02%20Packaging%20It%20Up.html" title="Packaging It Up"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Writing a Markov Chain Monte Carlo Routine</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

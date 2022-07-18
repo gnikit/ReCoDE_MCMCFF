@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Adding Functionality &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Speeding It Up" href="06%20Speeding%20It%20Up.html" />
+    <link rel="prev" title="Testing" href="04%20Testing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="06%20Speeding%20It%20Up.html" title="Speeding It Up"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="04%20Testing.html" title="Testing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Adding Functionality</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1 align="center">Markov Chain Monte Carlo for fun and profit</h1>
+<h1 align="center"> 🎲 ⛓️ 👉 🧪 </h1><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
+
+<span class="c1"># This loads some custom styles for matplotlib</span>
+<span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">matplotlib</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;assets/matplotlibrc.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span>
+    <span class="mi">42</span>
+<span class="p">)</span>  <span class="c1"># This makes our random numbers reproducable when the notebook is rerun in order</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="adding-functionality">
+<h1>Adding Functionality<a class="headerlink" href="#adding-functionality" title="Permalink to this heading">¶</a></h1>
+<p>The main thing we want to be able to do is to take measurements, the code as I have writting it doesn’t really allow that because it only returns the final state in the chain. Let’s say we have a measurement called <code class="docutils literal notranslate"><span class="pre">average_color(state)</span></code> that we want to average over the whole chain. We could just stick that inside our definition of <code class="docutils literal notranslate"><span class="pre">mcmc</span></code> but we know that we will likely make other measurements too and we don’t want to keep writing new versions of our core functionality!</p>
+<section id="exercise-1">
+<h2>Exercise 1<a class="headerlink" href="#exercise-1" title="Permalink to this heading">¶</a></h2>
+<p>Have a think about how you would implement this and what options you have.</p>
+</section>
+<section id="solution-1">
+<h2>Solution 1<a class="headerlink" href="#solution-1" title="Permalink to this heading">¶</a></h2>
+<p>So I chatted with my mentors on this project on how to best do this and we came up with a few ideas:</p>
+<section id="option-1-just-save-all-the-states-and-return-them">
+<h3>Option 1: Just save all the states and return them<a class="headerlink" href="#option-1-just-save-all-the-states-and-return-them" title="Permalink to this heading">¶</a></h3>
+<p>The problem with this is the states are very big and we don’t want to waste all that memory. For an NxN state that uses 8 bit integers (the smallest we can use in numpy) 1000 samples would already use 2.5Gb of memory! We will see later that we’d really like to be able to go a bit bigger than 50x50 and 1000 samples!</p>
+</section>
+<section id="option-2-pass-in-a-function-to-make-measurements">
+<h3>Option 2: Pass in a function to make measurements<a class="headerlink" href="#option-2-pass-in-a-function-to-make-measurements" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">def</span> <span class="nf">mcmc</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">measurement</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">measurements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">measurement</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="o">...</span>
+
+    <span class="k">return</span> <span class="n">measurements</span>
+</pre></div>
+</div>
+<p>This could work but it limits how we can store measurements and what shape and type they can be. What if we want to store our measurements in a numpy array? Or what if your measurement itself is a vector or and object that can’t easily be stored in a numpy array? We would have to think carefully about what functionality we want.</p>
+</section>
+<section id="option-3-use-inheritance">
+<h3>Option 3: Use Inheritance<a class="headerlink" href="#option-3-use-inheritance" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This class would define the basic functionality of performing MCMC</span>
+<span class="k">class</span> <span class="nc">MCMCSampler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measurement</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+       
+<span class="c1"># This class would inherit from it and just implement the measurement</span>
+<span class="k">class</span> <span class="nc">AverageColorSampler</span><span class="p">(</span><span class="n">MCMCSampler</span><span class="p">):</span>
+    <span class="n">measurements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="nf">measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measurements</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">some_function</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+<span class="n">color_sampler</span> <span class="o">=</span> <span class="n">AverageColorSampler</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="n">color_sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This would definitely work but I personally am not a huge fan of object oriented programming so I’m gonna skip this option!</p>
+</section>
+</section>
+<section id="option-4-use-a-generator">
+<h2>Option 4: Use a generator<a class="headerlink" href="#option-4-use-a-generator" title="Permalink to this heading">¶</a></h2>
+<p>This is the approach I ended up settling on, we will use <a class="reference external" href="https://peps.python.org/pep-0255/">python generator function</a>. While you may not have come across generator functions before, you almost certainly will have come across generators, <code class="docutils literal notranslate"><span class="pre">range(n)</span></code> is a generator, <code class="docutils literal notranslate"><span class="pre">(i</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">[1,2,3])</span></code> is a generator. Generator functions are a way to build your own generators, by way of example here is range implemented as a generator function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s2">&quot;Behaves like the builtin range function of one argument&quot;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">i</span>  <span class="c1"># sends i out to whatever function called us</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span>  <span class="c1"># let&#39;s python know that we have nothing else to give</span>
+
+
+<span class="n">my_range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">my_range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;generator object my_range at 0x7fe3b2359660&gt;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+</pre></div>
+</div>
+</div>
+</div>
+<p>This requires only a very small change to our mcmc function and suddenly we can do whatever we like with the states! While we’re at it I’m going to add an aditional argument <code class="docutils literal notranslate"><span class="pre">stepsize</span></code> that allows us to only sample the state every <code class="docutils literal notranslate"><span class="pre">stepsize</span></code> MCMC steps. You’ll see why we would want to set this to value greater than 1 in a moment.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MCFF.ising_model</span> <span class="kn">import</span> <span class="n">energy</span><span class="p">,</span> <span class="n">all_up_state</span>
+<span class="kn">from</span> <span class="nn">MCFF.mcmc</span> <span class="kn">import</span> <span class="n">mcmc_original</span>
+
+
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">mcmc_generator</span><span class="p">(</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">):</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">N</span> <span class="o">==</span> <span class="n">M</span>
+
+    <span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stepsize</span><span class="p">):</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+            <span class="c1"># modify the state a little, here we just flip a random pixel</span>
+            <span class="n">current_state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">new_E</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">new_E</span> <span class="o">&lt;</span> <span class="n">E</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">new_E</span> <span class="o">-</span> <span class="n">E</span><span class="p">)</span> <span class="o">/</span> <span class="n">T</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">():</span>
+                <span class="n">E</span> <span class="o">=</span> <span class="n">new_E</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">current_state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># reject the change we made</span>
+        <span class="k">yield</span> <span class="n">current_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span>
+
+
+<span class="n">N_steps</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">stepsize</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="n">all_up_state</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">without_yield</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -o mcmc_original(initial_state, steps = N_steps, T = 5)
+<span class="n">with_yield</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -o [np.mean(s) for s in mcmc_generator(initial_state, T = 5, steps = N_steps, stepsize = 1)]
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">with_yield</span><span class="o">.</span><span class="n">best</span> <span class="o">/</span> <span class="n">without_yield</span><span class="o">.</span><span class="n">best</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">x slowdown!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>18.4 ms ± 364 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+9.51 ms ± 309 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+0x slowdown!
+</pre></div>
+</div>
+</div>
+</div>
+<p>Fun fact: if you replace <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">current_state.copy()</span></code> with <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">current_state</span></code> your python kernel will crash when you run the code. I believe this is a bug in Numba that related to how pointers to numpy arrays work but let’s not worry too much about it.</p>
+<p>We take a factor of two slowdown but that doesn’t seem so much to pay for the fact we can now sample the state at every single step rather than just the last.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Adding Functionality</a><ul>
+<li><a class="reference internal" href="#exercise-1">Exercise 1</a></li>
+<li><a class="reference internal" href="#solution-1">Solution 1</a><ul>
+<li><a class="reference internal" href="#option-1-just-save-all-the-states-and-return-them">Option 1: Just save all the states and return them</a></li>
+<li><a class="reference internal" href="#option-2-pass-in-a-function-to-make-measurements">Option 2: Pass in a function to make measurements</a></li>
+<li><a class="reference internal" href="#option-3-use-inheritance">Option 3: Use Inheritance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#option-4-use-a-generator">Option 4: Use a generator</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="04%20Testing.html"
+                          title="previous chapter">Testing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="06%20Speeding%20It%20Up.html"
+                          title="next chapter">Speeding It Up</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/learning/05 Adding Functionality.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="06%20Speeding%20It%20Up.html" title="Speeding It Up"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="04%20Testing.html" title="Testing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Adding Functionality</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

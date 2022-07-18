@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Introduction &#8212; MCFF 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Packaging It Up" href="02%20Packaging%20It%20Up.html" />
+    <link rel="prev" title="API Docs" href="../api_docs.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="02%20Packaging%20It%20Up.html" title="Packaging It Up"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../api_docs.html" title="API Docs"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1 align="center">Markov Chain Monte Carlo for fun and profit</h1>
+<h1 align="center"> 🎲 ⛓️ 👉 🧪 </h1>
+<section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h1>
+<p>Hello and welcome to the documentation for MCMCFF! These notebooks will guide you through the process of writing a medium sized scientific software project, discussing the decision and tradeoffs made along the way.</p>
+<section id="setting-up-your-environment">
+<h2>Setting up your environment<a class="headerlink" href="#setting-up-your-environment" title="Permalink to this heading">¶</a></h2>
+<p>It’s strongly encouraged that you follow along this notebook in an enviroment where you can run the cells yourself and change them. You can either clone this git repository and run the cells in a python environment on your local machine, or if you for some reason can’t do that (because you’re an a phone or tablet for instance) you can instead open this notebook in <span class="xref myst">binder</span></p>
+<p>I would also suggest you setup a python environment just for this. You can use your preferred method to do this, but I will recomend <code class="docutils literal notranslate"><span class="pre">conda</span></code> because it’s both what I currently use and what is recommeded by Imperial: LINK</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#make a new conda environment from the specification in environment.yml</span>
+conda env create --file environment.yml
+
+<span class="c1">#activate the environment</span>
+conda activate recode
+</pre></div>
+</div>
+<p>If you’d prefer to keep this environment nicely stored away in this repository, you can save in a folder called env by doing</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create --prefix env --file environment.yml
+conda activate ./env <span class="c1">#you have to run this in the enclosing directory of course!</span>
+</pre></div>
+</div>
+<p>Further Reading on how to set up an environment:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://carpentries-incubator.github.io/introduction-to-conda-for-data-scientists/02-working-with-environments/index.html">Software Carpentry</a> More practical.</p></li>
+<li><p><a class="reference external" href="https://the-turing-way.netlify.app/reproducible-research/renv.html">The Turing Way</a> Discusses why we use environments.</p></li>
+<li><p><a class="reference external" href="https://imperialcollegelondon.github.io/grad_school_software_engineering_course/l1-01-tools-I/index.html">Essential Software Engineering for Researchers</a> Quick overview.</p></li>
+</ul>
+</section>
+<section id="the-problem">
+<h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this heading">¶</a></h2>
+<p>So without further ado lets talk about the problem we’ll be working on, you don’t necessaryily need to understand the full details of this to learn the important lessons but I will give a quick summary here. We want to simulate a physical model called the <strong>Ising model</strong>, which is famous in physics because it’s about the simplest thing you can come up with that displays a phase transition, a special kind of shift between two different behaviours.</p>
+<p>I’m going to weave exposition and code here so don’t mind if I just take a moment to impor some packages and do some housekeeping:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># This loads some custom styles for matplotlib</span>
+<span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">matplotlib</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;assets/matplotlibrc.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span>
+    <span class="mi">42</span>
+<span class="p">)</span>  <span class="c1"># This makes our random numbers reproducable when the notebook is rerun in order</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We’re going to be working with arrays of numbers so it will make sense to work with <code class="docutils literal notranslate"><span class="pre">Numpy</span></code> and we’ll also want to plot things, the standard choice for this is <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, though there are other options, <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and <code class="docutils literal notranslate"><span class="pre">plotly</span></code> being notable ones.</p>
+<p>Let me quickly plot something to aid the imagination:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">show_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[])</span>
+
+
+<span class="n">show_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/9d686a12cd12e27583aef22230956c9a7eef82fd07234928c35563c2ed436aa6.png" src="../_images/9d686a12cd12e27583aef22230956c9a7eef82fd07234928c35563c2ed436aa6.png" />
+</div>
+</div>
+<p>In my head, the Ising model is basically all about peer pressure. You’re a tiny creature and you live in a little world where you can only be one of two things, up/down, left/right, in/out doesn’t matter.</p>
+<p>But what <em>does matter</em> is that you’re doing the same thing as you’re neighbours. We’re going to visualise this with images like the above, representing the two different camps, though at the moment what I’ve plotted is random, there’s no peer pressure going on yet.</p>
+<p>The way that a physicist would quantify this peer pressure is to assign a number to each state, lower numbers meaning more of the little creatures are doing the same thing as their neighbours. We’ll call this the Energy, because physicists always call things Energy, that’s just what we do.</p>
+<p>To calculate the energy what we’re gonna do is look at all the pixels/creatures, and for each one, we look at the four neighbours to the N/E/S/W, everytime we find a neighbour that agrees, we’ll subtract 1 from our total and every time we find neighbours that disagree we’ll add 1 to our total. Creatures at the edges will simply have fewer neighbours to worry about.</p>
+<p>I’ll show you what the equation for this looks like, but don’t worry to much about it, the word description should be enough to write some code. If we assign the ith creature the label $s_i = \pm1$ then the energy is
+$$E = \sum_{(i,j)} s_i s_j$$</p>
+<p>Ok let’s do some little tests, let’s make the all up, all down and random state and see if we can compute their energies.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
+<span class="n">all_down</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
+<span class="n">random</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.image</span> <span class="kn">import</span> <span class="n">imread</span>
+
+<span class="n">custom</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">imread</span><span class="p">(</span><span class="s2">&quot;data/test_state.png&quot;</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">)</span>  <span class="c1"># load a 100x100 png, take the red channel, remap 0,1 to -1,1</span>
+
+<span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_up</span><span class="p">,</span> <span class="n">all_down</span><span class="p">,</span> <span class="n">random</span><span class="p">,</span> <span class="n">custom</span><span class="p">]</span>
+
+<span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+    <span class="n">show_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/01ee29106447fe61e567e0f20bddd1ede95a7cb64d4369aec7c3edcc903f8ad9.png" src="../_images/01ee29106447fe61e567e0f20bddd1ede95a7cb64d4369aec7c3edcc903f8ad9.png" />
+</div>
+</div>
+<p>If you stare at the first two long enough you’ll realise we can figure out the energy of all_up and all_down without writing any code at all:</p>
+<div style="margin:auto;max-width:800px;">
+<img src="assets/energy_diagram.png"/>
+</div>
+<p>So we know that for the first two:
+$$E = \frac{1}{L^2} (4(L-2)^2 + 12(L-2) + 8)$$</p>
+<p>And for the random case we can make a pretty good guess that it should be zero on average. And the last we will just use to as a testcase.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">E_prediction_all_the_same</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">L</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">L</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)</span>
+
+
+<span class="n">L</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;For L = </span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">, We predict E = </span><span class="si">{</span><span class="n">E_prediction_all_the_same</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For L = 100, We predict E = -39600
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-1-write-a-function-to-compute-the-energy-of-a-state">
+<h2>Exercise 1: Write a function to compute the energy of a state<a class="headerlink" href="#exercise-1-write-a-function-to-compute-the-energy-of-a-state" title="Permalink to this heading">¶</a></h2>
+<p>See if you can write a function that calculates the energy and reproduces all the above cases.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># you are welcome to solve this in any way you like, I&#39;ve just filled out a very simple way to do it</span>
+<span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="c1"># your code goes here</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">E</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">M</span><span class="p">)</span>
+
+
+<span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">E_prediction_all_the_same</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">E_prediction_all_the_same</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;???&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">exp_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">expected_values</span><span class="p">):</span>
+    <span class="n">show_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Expected Value: </span><span class="si">{</span><span class="n">exp_value</span><span class="si">}</span><span class="s2">, Your value: </span><span class="si">{</span><span class="n">energy</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f6d0d162c235cdfce488da807e84a912264d265d1689daed7cbe106608a24502.png" src="../_images/f6d0d162c235cdfce488da807e84a912264d265d1689daed7cbe106608a24502.png" />
+</div>
+</div>
+</section>
+<section id="solution-1">
+<h2>Solution 1<a class="headerlink" href="#solution-1" title="Permalink to this heading">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="c1"># handle the north and south neighbours</span>
+            <span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">di</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
+                    <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">di</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+            <span class="c1"># handle the east and west neighbours</span>
+            <span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">dj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">:</span>
+                    <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="n">dj</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">E</span>
+
+
+<span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">E_prediction_all_the_same</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">E_prediction_all_the_same</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;???&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">f</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">exp_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">expected_values</span><span class="p">):</span>
+    <span class="n">show_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Expected Value: </span><span class="si">{</span><span class="n">exp_value</span><span class="si">}</span><span class="s2">, Your value: </span><span class="si">{</span><span class="n">energy</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c4d8d15ff4122dd5ce2473d56bcb89ea9f54506c2d24538d03970156d0c383d0.png" src="../_images/c4d8d15ff4122dd5ce2473d56bcb89ea9f54506c2d24538d03970156d0c383d0.png" />
+</div>
+</div>
+<p>It’s a bit tricky to know what to do with the random value, let’s try running it 100 times and see what we get:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># How large the system should be</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># How many random samples to use</span>
+<span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="n">energy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">)))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mean = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span><span class="si">}</span><span class="s2">, standard error = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean = -0.24, standard error = 29.819071481184658
+</pre></div>
+</div>
+<img alt="../_images/3444e8ff7e8cc1b13e0d54e49947292c037548b7c668c67947af17b16841c5e0.png" src="../_images/3444e8ff7e8cc1b13e0d54e49947292c037548b7c668c67947af17b16841c5e0.png" />
+</div>
+</div>
+<p>If you run this a few times you’ll see the mean is usually within a few standard errors of 0, which gives us some confidence. In the testing section we will discuss how we might go about doing automated tests of random variables like this.</p>
+<section id="making-it-a-little-faster">
+<h3>Making it a little faster<a class="headerlink" href="#making-it-a-little-faster" title="Permalink to this heading">¶</a></h3>
+<p>This project is not intended to focus on optimising for performance but it is worth putting a little effort into making this function faster so that we can run experiments more quickly later.</p>
+<p>The main thing that slows us down here is that we’ve written a ‘tight loop’ in pure python, the energy function is just a loop over the fundamental operation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">di</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>which in theoy only requires a few memory load operations, a multiply, an add and a store back to memory (give or take). However because Python is such a dynamic language, it will have to do extra things like check the type and methods of <code class="docutils literal notranslate"><span class="pre">state</span></code> and <code class="docutils literal notranslate"><span class="pre">E</span></code>, invoke their array access methods <code class="docutils literal notranslate"><span class="pre">object.__get__</span></code>, etc etc. We call this extra work overhead.</p>
+<p>In most cases the ratio of overhead to actual computation is not too bad, but here because the fundamental computation is so simple it’s likely the overhead accounts for much more of the overal time.</p>
+<p>In scientific python like this there are usually two main options for reducing the overhead:</p>
+<section id="using-arrays">
+<h4>Using Arrays<a class="headerlink" href="#using-arrays" title="Permalink to this heading">¶</a></h4>
+<p>One way is we work with arrays of numbers and operations defined over those arrays such as <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">product</span></code> etc. <code class="docutils literal notranslate"><span class="pre">Numpy</span></code> is the canonical example of this in Python but many machine learning libraries are essentually doing a similar thing. We rely on the library to implement the operations efficiently and try to chain those operations together to achieve what we want. This imposes some limitations on the way we can write our code.</p>
+</section>
+<section id="using-compilation">
+<h4>Using Compilation<a class="headerlink" href="#using-compilation" title="Permalink to this heading">¶</a></h4>
+<p>The alternative is that we convert our Python code into a more efficient form that incurs less overhead. This requires a compilation or transpilation step and imposes a different set of constraints on the code.</p>
+<p>It’s a little tricky to decide which of the two approaches will work best for a given problem. My advice would be to have some familiarity with both but ultimatly to use what makes your development experience the best, since you’ll likely spend more time writing the code than you will waiting for it to run!</p>
+</section>
+</section>
+</section>
+<section id="exercise-2-write-a-faster-version-of-energy-state">
+<h2>Exercise 2: Write a faster version of <code class="docutils literal notranslate"><span class="pre">energy(state)</span></code><a class="headerlink" href="#exercise-2-write-a-faster-version-of-energy-state" title="Permalink to this heading">¶</a></h2>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">numba</span></code>, <code class="docutils literal notranslate"><span class="pre">cython</span></code>, or anything else, by what factor can you beat the naive approach? Numba is probably the easiest here.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_energy_function</span><span class="p">(</span><span class="n">energy_function</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">energy_function</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">==</span> <span class="n">energy</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">time_energy_function</span><span class="p">(</span><span class="n">energy_function</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">energy_function</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">your_faster_energy_function</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">energy</span><span class="p">(</span>
+        <span class="n">state</span>
+    <span class="p">)</span>  <span class="c1"># &lt;-- replace this with your implementation and compare how fast it runs!</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Naive baseline implementation&quot;</span><span class="p">)</span>
+<span class="n">test_energy_function</span><span class="p">(</span>
+    <span class="n">energy</span>
+<span class="p">)</span>  <span class="c1"># this should always pass because it&#39;s just comparing to itself!</span>
+<span class="n">naive</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -o -n 10 time_energy_function(energy)
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Your version&quot;</span><span class="p">)</span>
+<span class="n">test_energy_function</span><span class="p">(</span><span class="n">your_faster_energy_function</span><span class="p">)</span>
+<span class="n">yours</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -o -n 10 time_energy_function(your_faster_energy_function)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your speedup: </span><span class="si">{</span><span class="n">naive</span><span class="o">.</span><span class="n">best</span><span class="o">/</span><span class="n">yours</span><span class="o">.</span><span class="n">best</span> <span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">x !&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Naive baseline implementation
+78.1 ms ± 997 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+Your version
+75.6 ms ± 2.13 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+Your speedup: 1x !
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solution-2">
+<h2>Solution 2<a class="headerlink" href="#solution-2" title="Permalink to this heading">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_energy_function</span><span class="p">(</span><span class="n">energy_function</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">energy_function</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states</span><span class="p">]</span>
+
+
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
+
+
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">numba_energy</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="c1"># handle the north and south neighbours</span>
+            <span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">di</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
+                    <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">di</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+            <span class="c1"># handle the east and west neighbours</span>
+            <span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">dj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">:</span>
+                    <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="n">dj</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">E</span>
+
+
+<span class="k">def</span> <span class="nf">numpy_energy</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">state</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">state</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">E</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Naive baseline implementation&quot;</span><span class="p">)</span>
+<span class="n">naive</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -o -n 10 time_energy_function(energy)
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Numba version&quot;</span><span class="p">)</span>
+<span class="n">test_energy_function</span><span class="p">(</span><span class="n">numba_energy</span><span class="p">)</span>
+<span class="n">numba</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -n 10 -o time_energy_function(numba_energy)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Numba Speedup: </span><span class="si">{</span><span class="n">naive</span><span class="o">.</span><span class="n">best</span><span class="o">/</span><span class="n">numba</span><span class="o">.</span><span class="n">best</span> <span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">x !&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Numpy version&quot;</span><span class="p">)</span>
+<span class="n">test_energy_function</span><span class="p">(</span><span class="n">numpy_energy</span><span class="p">)</span>
+<span class="n">numpy</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -n 10 -o time_energy_function(numpy_energy)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Numpy Speedup: </span><span class="si">{</span><span class="n">naive</span><span class="o">.</span><span class="n">best</span><span class="o">/</span><span class="n">numpy</span><span class="o">.</span><span class="n">best</span> <span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">x !&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Naive baseline implementation
+77.1 ms ± 1.87 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+Numba version
+205 µs ± 16.6 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+Numba Speedup: 417x !
+
+Numpy version
+167 µs ± 30.7 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+Numpy Speedup: 554x !
+</pre></div>
+</div>
+</div>
+</div>
+<p>While writing the above faster versions I realised two things, first there was a bug in my code! I had written</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">dj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">:</span>
+        <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">di</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where I of course meant to have:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">dj</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">dj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">:</span>
+        <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">dj</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>I found this while writing the numpy version because the two functions were not giving the same results, I didn’t pick it up from writing the numba code because as you can see I just copied the implementation over. So the first lesson is that simple test cases don’t always catch even relatively obvious bugs.</p>
+<p>The second thing was that even my naive function was doing more work than it needed to! Because if the symmetry of how two neighbours talks to each other, we can rewrite the code as:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">energy2</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="c1"># handle the north and south neighbours</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
+                <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+            <span class="c1"># handle the east and west neighbours</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">:</span>
+                <span class="n">E</span> <span class="o">-=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">E</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Improved Naive version&quot;</span><span class="p">)</span>
+<span class="n">energy2</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># run the function once to let numba compile it before timing it</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="o">%</span><span class="k">timeit</span> -o test_energy_function(energy2)
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">naive</span><span class="o">.</span><span class="n">best</span><span class="o">/</span><span class="n">e2</span><span class="o">.</span><span class="n">best</span> <span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">x !&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Improved Naive version
+32.3 ms ± 1.54 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+Speedup: 2x !
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">¶</a></h2>
+<p>So far we’ve discussed the problem we want to solve, written a little code, tested it a bit and made some speed improvements.</p>
+<p>In the next notebook we will package the code up into a little python package, this is has two big benefits to use:</p>
+<ol class="arabic simple">
+<li><p>I won’t have to redefine the energy function we just wrote in the next notebook</p></li>
+<li><p>It will help with testing and documenting our code later</p></li>
+</ol>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#setting-up-your-environment">Setting up your environment</a></li>
+<li><a class="reference internal" href="#the-problem">The Problem</a></li>
+<li><a class="reference internal" href="#exercise-1-write-a-function-to-compute-the-energy-of-a-state">Exercise 1: Write a function to compute the energy of a state</a></li>
+<li><a class="reference internal" href="#solution-1">Solution 1</a><ul>
+<li><a class="reference internal" href="#making-it-a-little-faster">Making it a little faster</a><ul>
+<li><a class="reference internal" href="#using-arrays">Using Arrays</a></li>
+<li><a class="reference internal" href="#using-compilation">Using Compilation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exercise-2-write-a-faster-version-of-energy-state">Exercise 2: Write a faster version of <code class="docutils literal notranslate"><span class="pre">energy(state)</span></code></a></li>
+<li><a class="reference internal" href="#solution-2">Solution 2</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../api_docs.html"
+                          title="previous chapter">API Docs</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="02%20Packaging%20It%20Up.html"
+                          title="next chapter">Packaging It Up</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/learning/01 Introduction.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="02%20Packaging%20It%20Up.html" title="Packaging It Up"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../api_docs.html" title="API Docs"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MCFF 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Thomas Hodson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>
